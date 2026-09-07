@@ -559,7 +559,7 @@
             dbStatusBanner.className = "max-w-xl mx-auto mb-3 text-center text-xs font-semibold rounded-xl py-2 px-3 bg-amber-50 text-amber-700 border border-amber-200";
         }
 
-        // ===== ตัวกลางเก็บ/อ่านข้อมูล: ใช้ Firestore =====
+        // ===== ตัวกลางเก็บ/อ่านข้อมูล: ใช้ Firestore แบบดึง Stock อัตโนมัติข้ามวัน =====
         const dataStore = {
             async getSetLPDay(dateStr) {
                 if (db) {
@@ -571,17 +571,27 @@
             },
             async setSetLPDay(dateStr, data) {
                 if (db) {
-                    await db.collection('setLP_daily').doc(dateStr).set(data);
+                    await db.collection('setLP_daily').doc(dateStr).set(data, { merge: true });
                     return;
                 }
                 localStorage.setItem(`report_${dateStr}`, JSON.stringify(data));
             },
             async getLatestStockMeta(currentDateStr) {
+                let targetDate = new Date(currentDateStr);
+                // ค้นหาย้อนหลังไปสูงสุด 30 วัน เพื่อดึงตัวเลข stock ล่าสุดที่มีการกรอกไว้มาใช้ต่อ
+                for (let i = 1; i <= 30; i++) {
+                    targetDate.setDate(targetDate.getDate() - 1);
+                    const dateStr = getLocalDateString(targetDate);
+                    const data = await this.getSetLPDay(dateStr);
+                    if (data && data.totalStock !== undefined && data.totalStock !== '') {
+                        return data.totalStock;
+                    }
+                }
                 if (db) {
                     const docSnap = await db.collection('setLP_meta').doc('latestStock').get();
                     return docSnap.exists && docSnap.data().totalStock !== undefined ? docSnap.data().totalStock : '';
                 }
-                return scanLocalLatestStock(currentDateStr);
+                return '';
             },
             async setLatestStockMeta(totalStock) {
                 if (db) {
@@ -607,24 +617,6 @@
                 localStorage.setItem(`leave_data_${monthKey}`, JSON.stringify(data));
             }
         };
-
-        function scanLocalLatestStock(currentDateStr) {
-            let targetDate = new Date(currentDateStr);
-            for (let i = 0; i < 365; i++) {
-                targetDate.setDate(targetDate.getDate() - 1);
-                const dateStr = getLocalDateString(targetDate);
-                const saved = localStorage.getItem(`report_${dateStr}`);
-                if (saved) {
-                    try {
-                        const parsed = JSON.parse(saved);
-                        if (parsed.totalStock !== undefined && parsed.totalStock !== '') {
-                            return parsed.totalStock;
-                        }
-                    } catch (e) {}
-                }
-            }
-            return '';
-        }
 
         // ===== สลับแถบ =====
         function switchTab(tabNum) {
