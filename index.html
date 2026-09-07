@@ -1219,5 +1219,21 @@
 
         changeMonth();
     </script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBh4EEA1Dm9ikKH288qZwqOHTqaU4-b_yk",
+    authDomain: "lpnvac-1fae9.firebaseapp.com",
+    projectId: "lpnvac-1fae9",
+    storageBucket: "lpnvac-1fae9.firebasestorage.app",
+    messagingSenderId: "711849836491",
+    appId: "1:711849836491:web:5c2e18e35b66f12d7c404e"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+</script>
 </body>
 </html>
