@@ -559,7 +559,7 @@
             dbStatusBanner.className = "max-w-xl mx-auto mb-3 text-center text-xs font-semibold rounded-xl py-2 px-3 bg-amber-50 text-amber-700 border border-amber-200";
         }
 
-        // ===== ตัวกลางเก็บ/อ่านข้อมูล: ใช้ Firestore แบบดึง Stock อัตโนมัติข้ามวัน =====
+        // ===== ตัวกลางเก็บ/อ่านข้อมูล =====
         const dataStore = {
             async getSetLPDay(dateStr) {
                 if (db) {
@@ -583,7 +583,7 @@
                     targetDate.setDate(targetDate.getDate() - 1);
                     const dateStr = getLocalDateString(targetDate);
                     const data = await this.getSetLPDay(dateStr);
-                    if (data && data.totalStock !== undefined && data.totalStock !== '') {
+                    if (data && data.totalStock !== undefined && data.totalStock !== '' && data.totalStock !== null) {
                         return data.totalStock;
                     }
                 }
@@ -848,13 +848,18 @@
                     if(recorderSelect && item.recorder) recorderSelect.value = item.recorder;
                 });
 
-                if (data.totalStock !== undefined) totalStockInput.value = data.totalStock;
-                if (data.todayStock !== undefined) todayStockInput.value = data.todayStock;
+                if (data.totalStock !== undefined && data.totalStock !== null) {
+                    totalStockInput.value = data.totalStock;
+                }
+                if (data.todayStock !== undefined && data.todayStock !== null) {
+                    todayStockInput.value = data.todayStock;
+                }
 
                 statusText.textContent = "มีข้อมูลของวันนี้แล้ว · สามารถแก้ไขและกดบันทึกทับได้";
             } else {
+                // ดึงค่า totalStock จากวันก่อนหน้าอัตโนมัติหากยังไม่มีการกรอกในวันนี้
                 const latestTotal = await dataStore.getLatestStockMeta(dateStr);
-                if (latestTotal !== '' && latestTotal !== undefined) {
+                if (latestTotal !== '' && latestTotal !== undefined && latestTotal !== null) {
                     totalStockInput.value = latestTotal;
                 }
                 statusText.textContent = "ยังไม่มีข้อมูลของวันนี้ · กรอกแล้วกดบันทึกได้เลย";
