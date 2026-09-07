@@ -531,35 +531,23 @@
 
     <script>
         // =====================================================================
-        // ===== ตั้งค่า Firebase (ต้องกรอกให้ครบก่อนใช้งานจริง) =====
-        // วิธีขอค่าตรงนี้ฟรี:
-        // 1) ไปที่ https://console.firebase.google.com -> สร้างโปรเจกต์ใหม่
-        // 2) ในเมนูซ้าย เลือก Build > Firestore Database -> Create database
-        //    -> เลือก "Start in test mode" (ทดสอบก่อน ค่อยตั้งกฎความปลอดภัยทีหลัง)
-        // 3) กลับหน้า Project Overview -> ไอคอนรูป </> (Web) -> ตั้งชื่อแอป -> Register app
-        // 4) ระบบจะโชว์ค่า firebaseConfig ให้ก็อปมาแปะแทนค่า YOUR_... ด้านล่างนี้ทั้งหมด
-        // 5) เสร็จแล้วอัปโหลดไฟล์นี้ขึ้น Netlify ได้เลย ทุกเครื่องที่เปิดจะเห็นข้อมูลเดียวกัน
-        // ถ้ายังไม่กรอก ระบบจะทำงานแบบเดิม (เก็บข้อมูลเฉพาะเครื่องตัวเอง)
+        // ===== ตั้งค่า Firebase (เชื่อมต่อฐานข้อมูลของคุณเรียบร้อยแล้ว) =====
         // =====================================================================
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyBh4EEA1Dm9ikKH288qZwqOHTqaU4-b_yk",
+            authDomain: "lpnvac-1fae9.firebaseapp.com",
+            projectId: "lpnvac-1fae9",
+            storageBucket: "lpnvac-1fae9.firebasestorage.app",
+            messagingSenderId: "711849836491",
+            appId: "1:711849836491:web:5c2e18e35b66f12d7c404e"
         };
 
-        const isFirebaseConfigured = firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY";
         let db = null;
-
-        if (isFirebaseConfigured) {
-            try {
-                firebase.initializeApp(firebaseConfig);
-                db = firebase.firestore();
-            } catch (e) {
-                db = null;
-            }
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+        } catch (e) {
+            db = null;
         }
 
         const dbStatusBanner = document.getElementById('dbStatusBanner');
@@ -567,11 +555,11 @@
             dbStatusBanner.textContent = "✅ เชื่อมต่อฐานข้อมูลกลางแล้ว · ข้อมูลจะซิงค์ทุกเครื่องแบบเรียลไทม์";
             dbStatusBanner.className = "max-w-xl mx-auto mb-3 text-center text-xs font-semibold rounded-xl py-2 px-3 bg-emerald-50 text-emerald-700 border border-emerald-200";
         } else {
-            dbStatusBanner.textContent = "⚠️ ยังไม่ได้ตั้งค่าฐานข้อมูลกลาง (Firebase) · ตอนนี้ข้อมูลจะบันทึกเฉพาะเครื่องนี้เท่านั้น";
+            dbStatusBanner.textContent = "⚠️ ไม่สามารถเชื่อมต่อฐานข้อมูลกลางได้ · ตอนนี้ข้อมูลจะบันทึกเฉพาะเครื่องนี้เท่านั้น";
             dbStatusBanner.className = "max-w-xl mx-auto mb-3 text-center text-xs font-semibold rounded-xl py-2 px-3 bg-amber-50 text-amber-700 border border-amber-200";
         }
 
-        // ===== ตัวกลางเก็บ/อ่านข้อมูล: ใช้ Firestore ถ้าตั้งค่าไว้ ไม่งั้น fallback เป็น localStorage =====
+        // ===== ตัวกลางเก็บ/อ่านข้อมูล: ใช้ Firestore =====
         const dataStore = {
             async getSetLPDay(dateStr) {
                 if (db) {
@@ -620,7 +608,6 @@
             }
         };
 
-        // fallback เดิม (ใช้เฉพาะตอนยังไม่ได้ตั้งค่า Firebase): ไล่หาค่า Stock ล่าสุดย้อนหลังใน localStorage เครื่องนี้
         function scanLocalLatestStock(currentDateStr) {
             let targetDate = new Date(currentDateStr);
             for (let i = 0; i < 365; i++) {
@@ -733,11 +720,9 @@
                     usedSum += parseInt(item.setLP) || 0;
                 });
 
-                // ผลตรวจเช็คของ "วันก่อนหน้า" ที่บันทึกไว้ตอนนั้น
                 const prevCheckResult = parseInt(parsed.checkResult);
 
                 if (!isNaN(prevCheckResult) && prevCheckResult < 0) {
-                    // วันก่อนหน้าติดลบ (จ่ายกลางค้าง) -> นับรวมยอดค้างมาด้วย
                     const shortage = Math.abs(prevCheckResult);
                     return {
                         total: usedSum + shortage,
@@ -995,7 +980,7 @@
         ];
 
         let rowSelections = {};
-        let dirtyRows = new Set(); // เก็บ index ของแถวที่ถูกแก้ไขจริง ๆ นับจากครั้งล่าสุดที่บันทึก/โหลดข้อมูล
+        let dirtyRows = new Set();
 
         const leaveTableBody = document.getElementById('leaveTableBody');
 
@@ -1151,8 +1136,6 @@
                 let currentCreated = createdCell.textContent;
                 let currentUpdated = updatedCell.textContent;
 
-                // ประทับวันที่เฉพาะแถวที่ถูกแก้ไขจริงในรอบนี้เท่านั้น (dirtyRows)
-                // ไม่แตะแถวอื่นที่มีข้อมูลอยู่แล้วแต่ไม่ได้ถูกแก้
                 if (dirtyRows.has(index)) {
                     if (currentCreated === '-') {
                         currentCreated = dateString;
@@ -1174,7 +1157,7 @@
 
             try {
                 await dataStore.setVacationMonth(currentMonthKey, monthData);
-                dirtyRows.clear(); // เคลียร์สถานะแก้ไข หลังบันทึกเรียบร้อยแล้ว
+                dirtyRows.clear();
                 document.getElementById('customModal').style.display = 'flex';
             } catch (e) {
                 alert('บันทึกไม่สำเร็จ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต แล้วลองใหม่อีกครั้ง');
@@ -1219,21 +1202,5 @@
 
         changeMonth();
     </script>
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyBh4EEA1Dm9ikKH288qZwqOHTqaU4-b_yk",
-    authDomain: "lpnvac-1fae9.firebaseapp.com",
-    projectId: "lpnvac-1fae9",
-    storageBucket: "lpnvac-1fae9.firebasestorage.app",
-    messagingSenderId: "711849836491",
-    appId: "1:711849836491:web:5c2e18e35b66f12d7c404e"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-</script>
 </body>
 </html>
