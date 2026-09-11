@@ -382,15 +382,10 @@
             <h2 class="text-xs sm:text-sm font-bold text-[#1e4634] mb-3 flex items-center gap-2">
                 📦 ข้อมูล Stock Set LP ประจำวัน
             </h2>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">จำนวน Set LP ทั้งหมด</label>
                     <input type="number" id="totalStockInput" min="0" placeholder="ระบุทั้งหมด" class="w-full text-center border border-slate-200 bg-white rounded-xl py-2 px-2 focus:outline-none focus:ring-2 focus:ring-[#1e4634] text-slate-800 font-medium text-sm shadow-sm">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">Set LP ที่ใช้วันก่อน</label>
-                    <input type="number" id="prevDayUsedInput" readonly placeholder="ดึงอัตโนมัติ" class="w-full text-center border border-slate-200 bg-slate-100 rounded-xl py-2 px-2 text-slate-600 font-medium text-sm shadow-sm cursor-not-allowed">
-                    <div id="prevDayNote" class="text-[11px] text-amber-600 font-medium mt-1 text-center leading-snug"></div>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">จำนวน Set LP วันนี้</label>
@@ -559,7 +554,7 @@
             dbStatusBanner.className = "max-w-xl mx-auto mb-3 text-center text-xs font-semibold rounded-xl py-2 px-3 bg-amber-50 text-amber-700 border border-amber-200";
         }
 
-        // ===== ตัวกลางเก็บ/อ่านข้อมูล =====
+        // ===== ตัวกลางเก็บ/อ่านข้อมูล: ใช้ Firestore =====
         const dataStore = {
             async getSetLPDay(dateStr) {
                 if (db) {
@@ -571,27 +566,17 @@
             },
             async setSetLPDay(dateStr, data) {
                 if (db) {
-                    await db.collection('setLP_daily').doc(dateStr).set(data, { merge: true });
+                    await db.collection('setLP_daily').doc(dateStr).set(data);
                     return;
                 }
                 localStorage.setItem(`report_${dateStr}`, JSON.stringify(data));
             },
             async getLatestStockMeta(currentDateStr) {
-                let targetDate = new Date(currentDateStr);
-                // ค้นหาย้อนหลังไปสูงสุด 30 วัน เพื่อดึงตัวเลข stock ล่าสุดที่มีการกรอกไว้มาใช้ต่อ
-                for (let i = 1; i <= 30; i++) {
-                    targetDate.setDate(targetDate.getDate() - 1);
-                    const dateStr = getLocalDateString(targetDate);
-                    const data = await this.getSetLPDay(dateStr);
-                    if (data && data.totalStock !== undefined && data.totalStock !== '' && data.totalStock !== null) {
-                        return data.totalStock;
-                    }
-                }
                 if (db) {
                     const docSnap = await db.collection('setLP_meta').doc('latestStock').get();
                     return docSnap.exists && docSnap.data().totalStock !== undefined ? docSnap.data().totalStock : '';
                 }
-                return '';
+                return scanLocalLatestStock(currentDateStr);
             },
             async setLatestStockMeta(totalStock) {
                 if (db) {
@@ -617,6 +602,24 @@
                 localStorage.setItem(`leave_data_${monthKey}`, JSON.stringify(data));
             }
         };
+
+        function scanLocalLatestStock(currentDateStr) {
+            let targetDate = new Date(currentDateStr);
+            for (let i = 0; i < 365; i++) {
+                targetDate.setDate(targetDate.getDate() - 1);
+                const dateStr = getLocalDateString(targetDate);
+                const saved = localStorage.getItem(`report_${dateStr}`);
+                if (saved) {
+                    try {
+                        const parsed = JSON.parse(saved);
+                        if (parsed.totalStock !== undefined && parsed.totalStock !== '') {
+                            return parsed.totalStock;
+                        }
+                    } catch (e) {}
+                }
+            }
+            return '';
+        }
 
         // ===== สลับแถบ =====
         function switchTab(tabNum) {
@@ -667,8 +670,6 @@
         const nextDayBtn = document.getElementById('nextDayBtn');
 
         const totalStockInput = document.getElementById('totalStockInput');
-        const prevDayUsedInput = document.getElementById('prevDayUsedInput');
-        const prevDayNote = document.getElementById('prevDayNote');
         const todayStockInput = document.getElementById('todayStockInput');
         const setLPResultBadge = document.getElementById('setLPResultBadge');
         const stockWarningContainer = document.getElementById('stockWarningContainer');
@@ -697,37 +698,6 @@
             return `${yyyy}-${mm}-${dd}`;
         }
 
-        async function getPrevDayInfo(currentDateStr) {
-            let targetDate = new Date(currentDateStr);
-            targetDate.setDate(targetDate.getDate() - 1);
-            const dateStr = getLocalDateString(targetDate);
-
-            try {
-                const parsed = await dataStore.getSetLPDay(dateStr);
-                if (!parsed) return { total: 0, message: '' };
-
-                const roomList = parsed.rooms || parsed;
-                let usedSum = 0;
-                roomList.forEach(item => {
-                    usedSum += parseInt(item.setLP) || 0;
-                });
-
-                const prevCheckResult = parseInt(parsed.checkResult);
-
-                if (!isNaN(prevCheckResult) && prevCheckResult < 0) {
-                    const shortage = Math.abs(prevCheckResult);
-                    return {
-                        total: usedSum + shortage,
-                        message: `ใช้ set LP ${usedSum} + จ่ายกลางค้าง ${shortage} set`
-                    };
-                }
-
-                return { total: usedSum, message: '' };
-            } catch (e) {
-                return { total: 0, message: '' };
-            }
-        }
-
         let currentDate = new Date();
 
         async function updateDateDisplay() {
@@ -736,10 +706,6 @@
             engDateText.textContent = formatEngDate(currentDate);
 
             statusText.textContent = "กำลังโหลดข้อมูล...";
-
-            const prevInfo = await getPrevDayInfo(reportDateInput.value);
-            prevDayUsedInput.value = prevInfo.total;
-            prevDayNote.textContent = prevInfo.message;
 
             await loadDataForDate(reportDateInput.value);
         }
@@ -793,11 +759,10 @@
         }
 
         function calculateSetLPResult() {
-            const totalStock = parseInt(totalStockInput.value) || 0;
-            const prevUsed = parseInt(prevDayUsedInput.value) || 0;
             const todayStock = parseInt(todayStockInput.value) || 0;
+            const totalStock = parseInt(totalStockInput.value) || 0;
 
-            const result = (prevUsed + todayStock) - totalStock;
+            const result = todayStock - totalStock;
 
             setLPResultBadge.textContent = result;
 
@@ -848,18 +813,13 @@
                     if(recorderSelect && item.recorder) recorderSelect.value = item.recorder;
                 });
 
-                if (data.totalStock !== undefined && data.totalStock !== null) {
-                    totalStockInput.value = data.totalStock;
-                }
-                if (data.todayStock !== undefined && data.todayStock !== null) {
-                    todayStockInput.value = data.todayStock;
-                }
+                if (data.totalStock !== undefined) totalStockInput.value = data.totalStock;
+                if (data.todayStock !== undefined) todayStockInput.value = data.todayStock;
 
                 statusText.textContent = "มีข้อมูลของวันนี้แล้ว · สามารถแก้ไขและกดบันทึกทับได้";
             } else {
-                // ดึงค่า totalStock จากวันก่อนหน้าอัตโนมัติหากยังไม่มีการกรอกในวันนี้
                 const latestTotal = await dataStore.getLatestStockMeta(dateStr);
-                if (latestTotal !== '' && latestTotal !== undefined && latestTotal !== null) {
+                if (latestTotal !== '' && latestTotal !== undefined) {
                     totalStockInput.value = latestTotal;
                 }
                 statusText.textContent = "ยังไม่มีข้อมูลของวันนี้ · กรอกแล้วกดบันทึกได้เลย";
@@ -886,7 +846,7 @@
                 });
             });
 
-            const currentCheckResult = (parseInt(prevDayUsedInput.value) || 0) + (parseInt(todayStockInput.value) || 0) - (parseInt(totalStockInput.value) || 0);
+            const currentCheckResult = (parseInt(todayStockInput.value) || 0) - (parseInt(totalStockInput.value) || 0);
 
             const fullDataToSave = {
                 totalStock: totalStockInput.value,
