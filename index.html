@@ -172,10 +172,11 @@
         #vacationPage .modal-icon { font-size: 2.5rem; color: #5c8d71; margin-bottom: 10px; }
         #vacationPage .modal-message { font-size: 1.05rem; color: #2c4a3b; margin-bottom: 20px; font-weight: 500; }
         #vacationPage .modal-btn {
-            background-color: #8fbca3; color: white; border: none; padding: 8px 20px; border-radius: 8px;
-            font-family: 'Kanit', sans-serif; font-size: 0.95rem; cursor: pointer;
+            background-color: #1e4634; color: white; border: none; padding: 9px 24px; border-radius: 8px;
+            font-family: 'Kanit', sans-serif; font-size: 0.95rem; font-weight: 500; cursor: pointer;
+            box-shadow: 0 3px 8px rgba(30, 70, 52, 0.3);
         }
-        #vacationPage .modal-btn:hover { background-color: #79a88e; }
+        #vacationPage .modal-btn:hover { background-color: #163426; }
 
         /* Popup แจ้งเตือนวันหยุดซ้ำกัน */
         #vacationPage .dup-box {
@@ -1304,9 +1305,6 @@
                         <div class="dup-day-head">${e.label}</div>
                         <div>มีคนขอหยุดซ้ำกัน ${e.people.length} คน คือ</div>
                         ${buildPeopleHtml(e.people)}
-                        ${kind === 'block'
-                            ? '<div class="dup-block-msg">- ไม่สามารถขอหยุดได้ -</div><div class="dup-block-sub">(ระบบไม่บันทึกข้อมูล)</div>'
-                            : ''}
                     </div>`;
             });
 
@@ -1315,7 +1313,7 @@
             if (kind === 'block') {
 
                 title.className = 'dup-title block';
-                title.textContent = '⛔ ไม่สามารถบันทึกข้อมูลได้';
+                title.textContent = '⛔ ไม่สามารถขอหยุดได้เนื่องจากเกินกำหนด';
 
                 actions.innerHTML = '<button class="modal-btn" id="dupOkBtn">ตกลง</button>';
 
