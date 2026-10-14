@@ -2,480 +2,215 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-
-    <!-- ========================================================= -->
     <!-- ===================== PWA SETTINGS ====================== -->
-    <!-- ========================================================= -->
-
-    <!-- Web App Manifest -->
     <link rel="manifest" href="./manifest.json">
-
-    <!-- iOS Home Screen -->
     <link rel="apple-touch-icon" href="./icon.png">
     <link rel="apple-touch-icon-precomposed" href="./icon.png">
-
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Anes PBH">
-
-    <!-- Android / Chrome -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#1e4634">
-
-    <!-- App Description -->
-    <meta name="description"
-          content="ระบบงานวิสัญญีพยาบาล โรงพยาบาลพิบูลมังสาหาร">
-
-    <!-- Prevent phone number auto-linking -->
+    <meta name="description" content="ระบบงานวิสัญญีพยาบาล โรงพยาบาลพิบูลมังสาหาร">
     <meta name="format-detection" content="telephone=no">
-
     <!-- ========================================================= -->
 
     <title>Anes PBH</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Kanit:wght@300;400;500;600&display=swap"
-          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <style>
-        body {
-            font-family: 'Sarabun', sans-serif;
-        }
+        body { font-family: 'Sarabun', sans-serif; }
+        .kanit { font-family: 'Kanit', sans-serif; }
 
-        .kanit {
-            font-family: 'Kanit', sans-serif;
-        }
-
-        /* =====================================================
-           Tab bar
-        ===================================================== */
-
+        /* Tab bar */
         .tab-bar {
-            display: flex;
-            gap: 8px;
-            max-width: 1150px;
-            margin: 0 auto 16px auto;
-            background: #ffffff;
-            padding: 6px;
-            border-radius: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            border: 1px solid #e2e8f0;
+            display: flex; gap: 8px; max-width: 1150px; margin: 0 auto 16px auto;
+            background: #ffffff; padding: 6px; border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #e2e8f0;
         }
-
         .tab-btn {
-            flex: 1;
-            text-align: center;
-            padding: 12px 8px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            color: #64748b;
-            background: transparent;
-            border: none;
-            font-family: 'Sarabun', sans-serif;
+            flex: 1; text-align: center; padding: 12px 8px; border-radius: 12px;
+            font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.2s ease;
+            color: #64748b; background: transparent; border: none; font-family: 'Sarabun', sans-serif;
         }
+        .tab-btn.active-tab1 { background: #1e4634; color: #ffffff; box-shadow: 0 2px 6px rgba(30,70,52,0.3); }
+        .tab-btn.active-tab2 { background: #a8d5ba; color: #2c4a3b; box-shadow: 0 2px 6px rgba(168,213,186,0.4); }
 
-        .tab-btn.active-tab1 {
-            background: #1e4634;
-            color: #ffffff;
-            box-shadow: 0 2px 6px rgba(30,70,52,0.3);
-        }
+        .page-section { display: none !important; }
+        #setLPPage.visible { display: flex !important; }
+        #vacationPage.visible { display: block !important; }
 
-        .tab-btn.active-tab2 {
-            background: #a8d5ba;
-            color: #2c4a3b;
-            box-shadow: 0 2px 6px rgba(168,213,186,0.4);
-        }
-
-        .page-section {
-            display: none !important;
-        }
-
-        #setLPPage.visible {
-            display: flex !important;
-        }
-
-        #vacationPage.visible {
-            display: block !important;
-        }
-
-        /* =====================================================
-           Vacation page
-        ===================================================== */
-
+        /* Vacation page */
         #vacationPage {
-            --primary-color: #a8d5ba;
-            --bg-color: #fcfcfc;
-            --card-bg: #ffffff;
-            --text-color: #4a4a4a;
-            --border-color: #e2e8f0;
-
-            font-family: 'Kanit', sans-serif;
-            color: var(--text-color);
+            --primary-color: #a8d5ba; --bg-color: #fcfcfc; --card-bg: #ffffff;
+            --text-color: #4a4a4a; --border-color: #e2e8f0;
+            font-family: 'Kanit', sans-serif; color: var(--text-color);
         }
-
         #vacationPage .container {
-            max-width: 1150px;
-            margin: 0 auto;
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(168, 213, 186, 0.2);
+            max-width: 1150px; margin: 0 auto; background: var(--card-bg); padding: 30px;
+            border-radius: 20px; box-shadow: 0 10px 25px rgba(168, 213, 186, 0.2);
             border: 2px solid var(--primary-color);
         }
-
-        #vacationPage h2 {
-            text-align: center;
-            color: #5c8d71;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        #vacationPage .subtitle {
-            text-align: center;
-            color: #7f9b8c;
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-        }
-
+        #vacationPage h2 { text-align: center; color: #5c8d71; font-weight: 600; margin-bottom: 5px; }
+        #vacationPage .subtitle { text-align: center; color: #7f9b8c; font-size: 1.1rem; margin-bottom: 20px; }
         #vacationPage .header-controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            background-color: #f4faf6;
-            padding: 15px;
-            border-radius: 12px;
+            display: flex; justify-content: center; align-items: center; gap: 12px;
+            margin-bottom: 20px; background-color: #f4faf6; padding: 15px; border-radius: 12px;
         }
-
-        #vacationPage .header-controls label {
-            font-weight: 500;
-            color: #5c8d71;
-        }
-
+        #vacationPage .header-controls label { font-weight: 500; color: #5c8d71; }
         #vacationPage .header-controls select {
-            padding: 8px 15px;
-            border-radius: 8px;
-            border: 1px solid var(--primary-color);
-            font-family: 'Kanit', sans-serif;
-            font-size: 1rem;
-            outline: none;
-            background-color: white;
-            color: var(--text-color);
-            cursor: pointer;
+            padding: 8px 15px; border-radius: 8px; border: 1px solid var(--primary-color);
+            font-family: 'Kanit', sans-serif; font-size: 1rem; outline: none;
+            background-color: white; color: var(--text-color); cursor: pointer;
         }
-
         #vacationPage .calendar-container {
-            background: #f9fbf9;
-            border: 1px solid #d4e5d8;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 25px;
-            text-align: center;
+            background: #f9fbf9; border: 1px solid #d4e5d8; border-radius: 12px;
+            padding: 15px; margin-bottom: 25px; text-align: center;
         }
-
-        #vacationPage .calendar-title {
-            font-weight: 500;
-            color: #5c8d71;
-            margin-bottom: 10px;
-            font-size: 1.05rem;
-        }
-
+        #vacationPage .calendar-title { font-weight: 500; color: #5c8d71; margin-bottom: 10px; font-size: 1.05rem; }
         #vacationPage .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-            max-width: 450px;
-            margin: 0 auto 15px auto;
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px;
+            max-width: 450px; margin: 0 auto 15px auto;
         }
-
-        #vacationPage .calendar-day-name {
-            font-weight: 500;
-            font-size: 0.85rem;
-            color: #7f9b8c;
-            padding: 5px 0;
-        }
-
+        #vacationPage .calendar-day-name { font-weight: 500; font-size: 0.85rem; color: #7f9b8c; padding: 5px 0; }
         #vacationPage .calendar-day {
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-            border-radius: 50%;
-            margin: auto;
-            width: 32px;
-            height: 32px;
-            background: #ffffff;
-            border: 1px solid #eee;
+            aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem; border-radius: 50%; margin: auto; width: 32px; height: 32px;
+            background: #ffffff; border: 1px solid #eee;
         }
-
-        #vacationPage .calendar-day.empty {
-            background: transparent;
-            border: none;
-        }
-
+        #vacationPage .calendar-day.empty { background: transparent; border: none; }
         #vacationPage .calendar-day.holiday {
-            background-color: #ffeded;
-            border: 1.5px solid #ffb3b3;
-            color: #d95353;
-            font-weight: 500;
+            background-color: #ffeded; border: 1.5px solid #ffb3b3; color: #d95353; font-weight: 500;
         }
-
         #vacationPage .holiday-list-box {
-            background: #ffffff;
-            border: 1px dashed #a8d5ba;
-            border-radius: 8px;
-            padding: 10px 15px;
-            max-width: 500px;
-            margin: 0 auto;
-            text-align: left;
-            font-size: 0.9rem;
-            max-height: 150px;
-            overflow-y: auto;
+            background: #ffffff; border: 1px dashed #a8d5ba; border-radius: 8px; padding: 10px 15px;
+            max-width: 500px; margin: 0 auto; text-align: left; font-size: 0.9rem;
+            max-height: 150px; overflow-y: auto;
         }
-
-        #vacationPage .holiday-list-title {
-            font-weight: 500;
-            color: #5c8d71;
-            margin-bottom: 4px;
-        }
-
-        #vacationPage .holiday-item {
-            color: #666;
-            line-height: 1.5;
-        }
+        #vacationPage .holiday-list-title { font-weight: 500; color: #5c8d71; margin-bottom: 4px; }
+        #vacationPage .holiday-item { color: #666; line-height: 1.5; }
 
         #vacationPage table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            border-radius: 10px;
-            overflow: hidden;
+            width: 100%; border-collapse: collapse; margin-bottom: 20px;
+            border-radius: 10px; overflow: hidden;
         }
-
-        #vacationPage th,
-        #vacationPage td {
-            padding: 12px 10px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
+        #vacationPage th, #vacationPage td {
+            padding: 12px 10px; text-align: left; border-bottom: 1px solid var(--border-color);
             vertical-align: middle;
         }
+        #vacationPage th { background-color: var(--primary-color); color: #2c4a3b; font-weight: 500; text-align: center; }
+        #vacationPage th:first-child { border-top-left-radius: 10px; }
+        #vacationPage th:last-child { border-top-right-radius: 10px; }
+        #vacationPage tbody tr:hover { background-color: #f9fbf9; }
 
-        #vacationPage th {
-            background-color: var(--primary-color);
-            color: #2c4a3b;
-            font-weight: 500;
-            text-align: center;
-        }
-
-        #vacationPage th:first-child {
-            border-top-left-radius: 10px;
-        }
-
-        #vacationPage th:last-child {
-            border-top-right-radius: 10px;
-        }
-
-        #vacationPage tbody tr:hover {
-            background-color: #f9fbf9;
-        }
-
-        #vacationPage .selection-container {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        #vacationPage .selection-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            min-height: 28px;
-        }
-
+        #vacationPage .selection-container { display: flex; flex-direction: column; gap: 8px; }
+        #vacationPage .selection-tags { display: flex; flex-wrap: wrap; gap: 5px; min-height: 28px; }
         #vacationPage .tag-x {
-            background-color: #e6f4ea;
-            border: 1px solid #ceead6;
-            color: #137333;
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-weight: 500;
+            background-color: #e6f4ea; border: 1px solid #ceead6; color: #137333;
+            padding: 2px 8px; border-radius: 6px; font-size: 0.85rem;
+            display: inline-flex; align-items: center; gap: 5px; font-weight: 500;
         }
-
         #vacationPage .tag-v {
-            background-color: #fce8e6;
-            border: 1px solid #fad2cf;
-            color: #c5221f;
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            font-weight: 500;
+            background-color: #fce8e6; border: 1px solid #fad2cf; color: #c5221f;
+            padding: 2px 8px; border-radius: 6px; font-size: 0.85rem;
+            display: inline-flex; align-items: center; gap: 5px; font-weight: 500;
         }
-
-        #vacationPage .tag-remove {
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.8rem;
-            opacity: 0.7;
-        }
-
-        #vacationPage .tag-remove:hover {
-            opacity: 1;
-        }
+        #vacationPage .tag-remove { cursor: pointer; font-weight: bold; font-size: 0.8rem; opacity: 0.7; }
+        #vacationPage .tag-remove:hover { opacity: 1; }
 
         #vacationPage .select-dropdown {
-            padding: 6px 10px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            font-family: 'Kanit', sans-serif;
-            font-size: 0.9rem;
-            outline: none;
-            background-color: #fff;
-            color: var(--text-color);
-            cursor: pointer;
-            width: 100%;
+            padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-color);
+            font-family: 'Kanit', sans-serif; font-size: 0.9rem; outline: none;
+            background-color: #fff; color: var(--text-color); cursor: pointer; width: 100%;
         }
 
+        /* Note ย้ายมาอยู่ใต้ชื่อ */
+        #vacationPage .name-cell strong { display: block; }
+        #vacationPage tr.main-row td { border-bottom: none; padding-bottom: 4px; }
+        #vacationPage tr.note-row td { padding-top: 0; padding-bottom: 14px; }
+        #vacationPage tr.note-row textarea.note-input {
+            margin-top: 0; min-height: 0; height: 38px; rows: 1;
+            resize: none; overflow: hidden; white-space: nowrap; line-height: 1.4;
+        }
         #vacationPage textarea.note-input {
-            width: 95%;
-            min-height: 45px;
-            padding: 8px 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-family: 'Kanit', sans-serif;
-            font-size: 0.9rem;
-            outline: none;
-            resize: vertical;
-            background-color: #fff;
-            color: var(--text-color);
+            display: block; width: 100%; min-height: 45px; margin-top: 8px; padding: 8px 10px;
+            border: 1px solid var(--border-color); border-radius: 8px;
+            font-family: 'Kanit', sans-serif; font-size: 0.9rem; outline: none; resize: vertical;
+            background-color: #fff; color: var(--text-color); box-sizing: border-box;
         }
-
         #vacationPage textarea.note-input:focus {
-            border-color: #8fbca3;
-            box-shadow: 0 0 5px rgba(168, 213, 186, 0.5);
+            border-color: #8fbca3; box-shadow: 0 0 5px rgba(168, 213, 186, 0.5);
         }
 
         #vacationPage .date-display {
-            font-size: 0.85rem;
-            color: #adb5bd;
-            text-align: center;
-            line-height: 1.4;
-            font-weight: 300;
+            font-size: 0.85rem; color: #adb5bd; text-align: center; line-height: 1.4; font-weight: 300;
         }
-
-        #vacationPage .footer-org {
-            text-align: right;
-            font-size: 0.9rem;
-            color: #666;
-            margin-top: 15px;
-            font-weight: 300;
-        }
-
-        #vacationPage .action-bar {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 15px;
-        }
-
+        #vacationPage .footer-org { text-align: right; font-size: 0.9rem; color: #666; margin-top: 15px; font-weight: 300; }
+        #vacationPage .action-bar { display: flex; justify-content: flex-end; margin-top: 15px; }
         #vacationPage .btn-save {
-            background-color: #8fbca3;
-            color: white;
-            border: none;
-            padding: 9px 22px;
-            border-radius: 8px;
-            font-family: 'Kanit', sans-serif;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: background 0.2s;
+            background-color: #1e4634; color: white; border: none; padding: 12px 32px; border-radius: 12px;
+            font-family: 'Kanit', sans-serif; font-size: 1.05rem; font-weight: 500; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(30, 70, 52, 0.35); transition: background 0.2s, transform 0.1s;
         }
-
-        #vacationPage .btn-save:hover {
-            background-color: #79a88e;
-        }
+        #vacationPage .btn-save:hover { background-color: #163426; }
+        #vacationPage .btn-save:active { transform: scale(0.97); }
 
         #vacationPage .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.4);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.4); justify-content: center; align-items: center; z-index: 1000;
         }
-
         #vacationPage .modal-box {
-            background: #ffffff;
-            padding: 25px 35px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            max-width: 350px;
-            width: 90%;
+            background: #ffffff; padding: 25px 35px; border-radius: 15px; text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 350px; width: 90%;
             animation: fadeIn 0.2s ease-in-out;
         }
-
-        #vacationPage .modal-icon {
-            font-size: 2.5rem;
-            color: #5c8d71;
-            margin-bottom: 10px;
-        }
-
-        #vacationPage .modal-message {
-            font-size: 1.05rem;
-            color: #2c4a3b;
-            margin-bottom: 20px;
-            font-weight: 500;
-        }
-
+        #vacationPage .modal-icon { font-size: 2.5rem; color: #5c8d71; margin-bottom: 10px; }
+        #vacationPage .modal-message { font-size: 1.05rem; color: #2c4a3b; margin-bottom: 20px; font-weight: 500; }
         #vacationPage .modal-btn {
-            background-color: #8fbca3;
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 8px;
-            font-family: 'Kanit', sans-serif;
-            font-size: 0.95rem;
-            cursor: pointer;
+            background-color: #8fbca3; color: white; border: none; padding: 8px 20px; border-radius: 8px;
+            font-family: 'Kanit', sans-serif; font-size: 0.95rem; cursor: pointer;
         }
+        #vacationPage .modal-btn:hover { background-color: #79a88e; }
 
-        #vacationPage .modal-btn:hover {
-            background-color: #79a88e;
+        /* Popup แจ้งเตือนวันหยุดซ้ำกัน */
+        #vacationPage .dup-box {
+            background: #ffffff; padding: 22px 22px 20px 22px; border-radius: 15px; text-align: left;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15); max-width: 400px; width: 92%;
+            max-height: 85vh; display: flex; flex-direction: column; animation: fadeIn 0.2s ease-in-out;
+        }
+        #vacationPage .dup-title { text-align: center; font-size: 1.1rem; font-weight: 600; margin-bottom: 12px; }
+        #vacationPage .dup-title.warn { color: #b7791f; }
+        #vacationPage .dup-title.block { color: #c5221f; }
+        #vacationPage .dup-content { overflow-y: auto; flex: 1; margin-bottom: 16px; }
+        #vacationPage .dup-day {
+            border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 12px; margin-bottom: 10px;
+            background: #fafafa; font-size: 0.95rem; line-height: 1.6; color: #333;
+        }
+        #vacationPage .dup-day.is-block { background: #fff5f5; border-color: #fad2cf; }
+        #vacationPage .dup-day-head { font-weight: 600; color: #2c4a3b; }
+        #vacationPage .dup-day.is-block .dup-day-head { color: #c5221f; }
+        #vacationPage .dup-person { padding-left: 8px; }
+        #vacationPage .dup-person .t-off { color: #137333; font-weight: 500; }
+        #vacationPage .dup-person .t-vac { color: #c5221f; font-weight: 500; }
+        #vacationPage .dup-block-msg { margin-top: 6px; font-weight: 600; color: #c5221f; text-align: center; }
+        #vacationPage .dup-block-sub { text-align: center; color: #c5221f; font-size: 0.85rem; }
+        #vacationPage .dup-actions { display: flex; gap: 10px; justify-content: center; }
+        #vacationPage .btn-cancel {
+            background-color: #e2e8f0; color: #475569; border: none; padding: 8px 20px; border-radius: 8px;
+            font-family: 'Kanit', sans-serif; font-size: 0.95rem; cursor: pointer;
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        /* =====================================================
-           iPhone Safe Area
-        ===================================================== */
-
+        /* iPhone Safe Area */
         body {
             padding-top: max(1.5rem, env(safe-area-inset-top));
             padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
@@ -487,120 +222,45 @@
 
 <body class="bg-slate-100 min-h-screen py-6 px-3">
 
-    <!-- ===================================================== -->
     <!-- แถบเลือกโหมด -->
-    <!-- ===================================================== -->
-
     <div class="tab-bar">
-
-        <button
-            id="tabBtn1"
-            class="tab-btn active-tab1"
-            onclick="switchTab(1)">
-            รายงาน Set LP
-        </button>
-
-        <button
-            id="tabBtn2"
-            class="tab-btn"
-            onclick="switchTab(2)">
-            ลาพักร้อน
-        </button>
-
+        <button id="tabBtn1" class="tab-btn active-tab1" onclick="switchTab(1)">รายงาน Set LP</button>
+        <button id="tabBtn2" class="tab-btn" onclick="switchTab(2)">ลาพักร้อน</button>
     </div>
 
-
-    <!-- ===================================================== -->
     <!-- สถานะ Firebase -->
-    <!-- ===================================================== -->
+    <div id="dbStatusBanner" class="max-w-xl mx-auto mb-3 text-center text-xs font-semibold rounded-xl py-2 px-3"></div>
 
-    <div
-        id="dbStatusBanner"
-        class="max-w-xl mx-auto mb-3 text-center text-xs font-semibold rounded-xl py-2 px-3">
-    </div>
-
-
-    <!-- ===================================================== -->
     <!-- หน้า 1 : Set LP -->
-    <!-- ===================================================== -->
-
-    <div
-        id="setLPPage"
-        class="page-section visible flex justify-center items-start">
+    <div id="setLPPage" class="page-section visible flex justify-center items-start">
 
         <div class="max-w-xl w-full bg-white rounded-3xl shadow-lg overflow-hidden p-5 sm:p-6 border border-slate-200">
 
             <div class="mb-5 pb-4 border-b border-slate-100">
-
-                <h1 class="text-base sm:text-lg font-bold text-slate-800 leading-snug">
-                    รายงานการใช้ผ้า
-                </h1>
-
-                <p class="text-xs sm:text-sm font-medium text-slate-600">
-                    กลุ่มงานการพยาบาลผู้ป่วยผ่าตัดและวิสัญญีพยาบาล
-                </p>
-
-                <p class="text-xs text-slate-400">
-                    โรงพยาบาลพิบูลมังสาหาร
-                </p>
-
+                <h1 class="text-base sm:text-lg font-bold text-slate-800 leading-snug">รายงานการใช้ผ้า</h1>
+                <p class="text-xs sm:text-sm font-medium text-slate-600">กลุ่มงานการพยาบาลผู้ป่วยผ่าตัดและวิสัญญีพยาบาล</p>
+                <p class="text-xs text-slate-400">โรงพยาบาลพิบูลมังสาหาร</p>
             </div>
 
-
             <!-- วันที่ -->
-
             <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 mb-4 flex items-center justify-between shadow-sm">
 
-                <button
-                    id="prevDayBtn"
-                    class="w-9 h-9 flex items-center justify-center bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-100 transition shadow-sm font-bold">
-                    &lsaquo;
-                </button>
+                <button id="prevDayBtn" class="w-9 h-9 flex items-center justify-center bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-100 transition shadow-sm font-bold">&lsaquo;</button>
 
-                <div
-                    class="text-center cursor-pointer relative"
-                    id="dateDisplayContainer">
-
-                    <div
-                        id="thaiDateText"
-                        class="font-bold text-slate-800 text-sm sm:text-base">
-                        วัน...
-                    </div>
-
-                    <div
-                        id="engDateText"
-                        class="text-xs text-slate-400">
-                        ...
-                    </div>
-
-                    <input
-                        type="date"
-                        id="reportDate"
-                        class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
-
+                <div class="text-center cursor-pointer relative" id="dateDisplayContainer">
+                    <div id="thaiDateText" class="font-bold text-slate-800 text-sm sm:text-base">วัน...</div>
+                    <div id="engDateText" class="text-xs text-slate-400">...</div>
+                    <input type="date" id="reportDate" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
                 </div>
 
                 <div class="flex items-center gap-2">
-
-                    <button
-                        id="nextDayBtn"
-                        class="w-9 h-9 flex items-center justify-center bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-100 transition shadow-sm font-bold">
-                        &rsaquo;
-                    </button>
-
-                    <button
-                        id="todayBtn"
-                        class="px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-700 hover:bg-slate-100 transition text-xs font-semibold shadow-sm">
-                        วันนี้
-                    </button>
-
+                    <button id="nextDayBtn" class="w-9 h-9 flex items-center justify-center bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-100 transition shadow-sm font-bold">&rsaquo;</button>
+                    <button id="todayBtn" class="px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-700 hover:bg-slate-100 transition text-xs font-semibold shadow-sm">วันนี้</button>
                 </div>
 
             </div>
 
-
             <!-- Stock Set LP -->
-
             <div class="bg-emerald-50/50 border border-emerald-100 rounded-2xl p-4 mb-5 shadow-sm">
 
                 <h2 class="text-xs sm:text-sm font-bold text-[#1e4634] mb-3 flex items-center gap-2">
@@ -608,436 +268,168 @@
                 </h2>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-
                     <div>
-
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">
-                            จำนวน Set LP ทั้งหมด
-                        </label>
-
-                        <input
-                            type="number"
-                            id="totalStockInput"
-                            min="0"
-                            placeholder="ระบุทั้งหมด"
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">จำนวน Set LP ทั้งหมด</label>
+                        <input type="number" id="totalStockInput" min="0" placeholder="ระบุทั้งหมด"
                             class="w-full text-center border border-slate-200 bg-white rounded-xl py-2 px-2 focus:outline-none focus:ring-2 focus:ring-[#1e4634] text-slate-800 font-medium text-sm shadow-sm">
-
                     </div>
-
-
                     <div>
-
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">
-                            จำนวน Set LP วันนี้
-                        </label>
-
-                        <input
-                            type="number"
-                            id="todayStockInput"
-                            min="0"
-                            placeholder="ระบุวันนี้"
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">จำนวน Set LP วันนี้</label>
+                        <input type="number" id="todayStockInput" min="0" placeholder="ระบุวันนี้"
                             class="stock-calc-trigger w-full text-center border border-slate-200 bg-white rounded-xl py-2 px-2 focus:outline-none focus:ring-2 focus:ring-[#1e4634] text-slate-800 font-medium text-sm shadow-sm">
-
                     </div>
-
                 </div>
-
 
                 <div class="bg-white border border-slate-200 rounded-xl p-3 flex flex-col sm:flex-row items-center justify-between gap-2 shadow-sm">
-
                     <div class="flex items-center gap-2 w-full sm:w-auto">
-
-                        <span class="text-xs font-bold text-slate-700">
-                            set LP (ผลตรวจเช็ค):
-                        </span>
-
-                        <span
-                            id="setLPResultBadge"
-                            class="px-3 py-1 bg-slate-100 text-slate-800 font-bold rounded-lg text-sm">
-                            0
-                        </span>
-
+                        <span class="text-xs font-bold text-slate-700">set LP (ผลตรวจเช็ค):</span>
+                        <span id="setLPResultBadge" class="px-3 py-1 bg-slate-100 text-slate-800 font-bold rounded-lg text-sm">0</span>
                     </div>
-
-                    <div
-                        id="stockWarningContainer"
-                        class="text-xs font-semibold text-slate-400 text-center sm:text-right w-full sm:w-auto">
-                        สถานะปกติ
-                    </div>
-
+                    <div id="stockWarningContainer" class="text-xs font-semibold text-slate-400 text-center sm:text-right w-full sm:w-auto">สถานะปกติ</div>
                 </div>
 
             </div>
 
-
             <!-- ตาราง -->
-
             <div class="overflow-x-auto mb-5 rounded-2xl border border-slate-200">
-
                 <table class="w-full text-left border-collapse">
-
                     <thead>
-
                         <tr class="bg-[#1e4634] text-white text-xs sm:text-sm tracking-wider">
-
-                            <th class="py-3 px-3 font-semibold w-1/4">
-                                ห้อง
-                            </th>
-
-                            <th class="py-3 px-2 font-semibold w-1/5 text-center">
-                                การใช้ Set LP
-                            </th>
-
-                            <th class="py-3 px-2 font-semibold w-1/5 text-center">
-                                ทิ้งผ้า (ชิ้น)
-                            </th>
-
-                            <th class="py-3 px-2 font-semibold w-1/3 text-center">
-                                ผู้บันทึกข้อมูล
-                            </th>
-
+                            <th class="py-3 px-3 font-semibold w-1/4">ห้อง</th>
+                            <th class="py-3 px-2 font-semibold w-1/5 text-center">การใช้ Set LP</th>
+                            <th class="py-3 px-2 font-semibold w-1/5 text-center">ทิ้งผ้า (ชิ้น)</th>
+                            <th class="py-3 px-2 font-semibold w-1/3 text-center">ผู้บันทึกข้อมูล</th>
                         </tr>
-
                     </thead>
-
-                    <tbody
-                        id="tableBody"
-                        class="divide-y divide-slate-100 text-sm text-slate-700 bg-white">
-                    </tbody>
-
+                    <tbody id="tableBody" class="divide-y divide-slate-100 text-sm text-slate-700 bg-white"></tbody>
                     <tfoot>
-
                         <tr class="bg-[#f7dcd1] font-bold text-slate-900 text-sm">
-
-                            <td class="py-3 px-3">
-                                รวมทั้งหมด
-                            </td>
-
-                            <td
-                                class="py-3 px-2 text-center"
-                                id="totalSetLP">
-                                0
-                            </td>
-
-                            <td
-                                class="py-3 px-2 text-center"
-                                id="totalCloth">
-                                0
-                            </td>
-
-                            <td class="py-3 px-2 text-center text-xs text-slate-500">
-                                -
-                            </td>
-
+                            <td class="py-3 px-3">รวมทั้งหมด</td>
+                            <td class="py-3 px-2 text-center" id="totalSetLP">0</td>
+                            <td class="py-3 px-2 text-center" id="totalCloth">0</td>
+                            <td class="py-3 px-2 text-center text-xs text-slate-500">-</td>
                         </tr>
-
                     </tfoot>
-
                 </table>
-
             </div>
-
 
             <!-- บันทึก -->
-
-            <button
-                id="saveBtn"
-                class="w-full bg-[#1e4634] hover:bg-[#163426] text-white font-semibold py-3.5 rounded-2xl shadow-md transition duration-200 text-sm sm:text-base flex justify-center items-center gap-2 mb-2">
-
+            <button id="saveBtn" class="w-full bg-[#1e4634] hover:bg-[#163426] text-white font-semibold py-3.5 rounded-2xl shadow-md transition duration-200 text-sm sm:text-base flex justify-center items-center gap-2 mb-2">
                 บันทึกข้อมูลวันนี้
-
             </button>
 
-
-            <div
-                id="statusText"
-                class="text-center text-xs text-slate-400 mb-4">
-
+            <div id="statusText" class="text-center text-xs text-slate-400 mb-4">
                 ยังไม่มีข้อมูลของวันนี้ · กรอกแล้วกดบันทึกได้เลย
-
             </div>
 
-
             <div class="border-t border-slate-100 pt-4 text-center">
-
-                <span class="text-xs font-semibold text-slate-500 block">
-                    ดูข้อมูลย้อนหลัง
-                </span>
-
+                <span class="text-xs font-semibold text-slate-500 block">ดูข้อมูลย้อนหลัง</span>
             </div>
 
         </div>
 
     </div>
 
-
-    <!-- ===================================================== -->
     <!-- หน้า 2 : ลาพักร้อน -->
-    <!-- ===================================================== -->
-
     <div id="vacationPage" class="page-section">
 
         <div class="container">
 
-            <h2>
-                ตารางการขอลาพักร้อน
-            </h2>
-
-            <div class="subtitle">
-                วิสัญญีพยาบาล
-            </div>
-
+            <h2>ตารางการขอลาพักร้อน</h2>
+            <div class="subtitle">วิสัญญีพยาบาล</div>
 
             <!-- เดือน -->
-
             <div class="header-controls">
-
-                <label for="monthYearSelect">
-                    ประจำเดือน / พ.ศ. :
-                </label>
-
-                <select
-                    id="monthYearSelect"
-                    onchange="changeMonth()">
-
-                    <option value="2026-10">
-                        ตุลาคม 2569
-                    </option>
-
-                    <option value="2026-11">
-                        พฤศจิกายน 2569
-                    </option>
-
-                    <option value="2026-12">
-                        ธันวาคม 2569
-                    </option>
-
-                    <option value="2027-01">
-                        มกราคม 2570
-                    </option>
-
-                    <option value="2027-02">
-                        กุมภาพันธ์ 2570
-                    </option>
-
-                    <option value="2027-03">
-                        มีนาคม 2570
-                    </option>
-
-                    <option value="2027-04">
-                        เมษายน 2570
-                    </option>
-
-                    <option value="2027-05">
-                        พฤษภาคม 2570
-                    </option>
-
-                    <option value="2027-06">
-                        มิถุนายน 2570
-                    </option>
-
-                    <option value="2027-07">
-                        กรกฎาคม 2570
-                    </option>
-
-                    <option value="2027-08">
-                        สิงหาคม 2570
-                    </option>
-
-                    <option value="2027-09">
-                        กันยายน 2570
-                    </option>
-
-                    <option value="2027-10">
-                        ตุลาคม 2570
-                    </option>
-
-                    <option value="2027-11">
-                        พฤศจิกายน 2570
-                    </option>
-
-                    <option value="2027-12">
-                        ธันวาคม 2570
-                    </option>
-
+                <label for="monthYearSelect">ประจำเดือน / พ.ศ. :</label>
+                <select id="monthYearSelect" onchange="changeMonth()">
+                    <option value="2026-10">ตุลาคม 2569</option>
+                    <option value="2026-11">พฤศจิกายน 2569</option>
+                    <option value="2026-12">ธันวาคม 2569</option>
+                    <option value="2027-01">มกราคม 2570</option>
+                    <option value="2027-02">กุมภาพันธ์ 2570</option>
+                    <option value="2027-03">มีนาคม 2570</option>
+                    <option value="2027-04">เมษายน 2570</option>
+                    <option value="2027-05">พฤษภาคม 2570</option>
+                    <option value="2027-06">มิถุนายน 2570</option>
+                    <option value="2027-07">กรกฎาคม 2570</option>
+                    <option value="2027-08">สิงหาคม 2570</option>
+                    <option value="2027-09">กันยายน 2570</option>
+                    <option value="2027-10">ตุลาคม 2570</option>
+                    <option value="2027-11">พฤศจิกายน 2570</option>
+                    <option value="2027-12">ธันวาคม 2570</option>
                 </select>
-
             </div>
-
 
             <!-- Calendar -->
-
             <div class="calendar-container">
+                <div class="calendar-title" id="calMonthTitle">ปฏิทินเดือน...</div>
 
-                <div
-                    class="calendar-title"
-                    id="calMonthTitle">
-                    ปฏิทินเดือน...
+                <div class="calendar-grid" id="calendarGrid">
+                    <div class="calendar-day-name" style="color: #d95353;">อา</div>
+                    <div class="calendar-day-name">จ</div>
+                    <div class="calendar-day-name">อ</div>
+                    <div class="calendar-day-name">พ</div>
+                    <div class="calendar-day-name">พฤ</div>
+                    <div class="calendar-day-name">ศ</div>
+                    <div class="calendar-day-name" style="color: #d95353;">ส</div>
                 </div>
-
-                <div
-                    class="calendar-grid"
-                    id="calendarGrid">
-
-                    <div
-                        class="calendar-day-name"
-                        style="color: #d95353;">
-                        อา
-                    </div>
-
-                    <div class="calendar-day-name">
-                        จ
-                    </div>
-
-                    <div class="calendar-day-name">
-                        อ
-                    </div>
-
-                    <div class="calendar-day-name">
-                        พ
-                    </div>
-
-                    <div class="calendar-day-name">
-                        พฤ
-                    </div>
-
-                    <div class="calendar-day-name">
-                        ศ
-                    </div>
-
-                    <div
-                        class="calendar-day-name"
-                        style="color: #d95353;">
-                        ส
-                    </div>
-
-                </div>
-
 
                 <div class="holiday-list-box">
-
-                    <div class="holiday-list-title">
-                        📌 รายการวันหยุดในเดือนนี้:
-                    </div>
-
-                    <div
-                        id="holidayListContent"
-                        class="holiday-item">
-                        - กำลังโหลดข้อมูล -
-                    </div>
-
+                    <div class="holiday-list-title">📌 รายการวันหยุดในเดือนนี้:</div>
+                    <div id="holidayListContent" class="holiday-item">- กำลังโหลดข้อมูล -</div>
                 </div>
-
             </div>
-
 
             <!-- ตารางลาพักร้อน -->
-
             <table>
-
                 <thead>
-
                     <tr>
-
-                        <th style="width: 18%;">
-                            ชื่อ
-                        </th>
-
-                        <th style="width: 34%;">
-
+                        <th style="width: 28%;">ชื่อ</th>
+                        <th style="width: 42%;">
                             วันขอ off - vac
-
                             <br>
-
-                            <span
-                                id="colHeaderMonth"
-                                style="font-size: 0.9rem; font-weight: 300;">
-                                (เดือน)
-                            </span>
-
+                            <span id="colHeaderMonth" style="font-size: 0.9rem; font-weight: 300;">(เดือน)</span>
                         </th>
-
-                        <th style="width: 18%;">
-                            Note
-                        </th>
-
-                        <th style="width: 15%;">
-                            วันลงข้อมูล
-                        </th>
-
-                        <th style="width: 15%;">
-                            วันแก้ไขข้อมูลล่าสุด
-                        </th>
-
+                        <th style="width: 15%;">วันลงข้อมูล</th>
+                        <th style="width: 15%;">วันแก้ไขข้อมูลล่าสุด</th>
                     </tr>
-
                 </thead>
-
                 <tbody id="leaveTableBody"></tbody>
-
             </table>
 
-
             <div class="action-bar">
-
-                <button
-                    class="btn-save"
-                    onclick="saveData()">
-
-                    บันทึกข้อมูล
-
-                </button>
-
+                <button class="btn-save" onclick="saveData()">บันทึกข้อมูล</button>
             </div>
 
-
             <div class="footer-org">
-
-                งานการพยาบาลผู้ป่วยผ่าตัดและวิสัญญีพยาบาล
-                โรงพยาบาลพิบูลมังสาหาร
-
+                งานการพยาบาลผู้ป่วยผ่าตัดและวิสัญญีพยาบาล โรงพยาบาลพิบูลมังสาหาร
             </div>
 
         </div>
 
-
-        <!-- Modal -->
-
-        <div
-            class="modal-overlay"
-            id="customModal">
-
+        <!-- Modal บันทึกสำเร็จ -->
+        <div class="modal-overlay" id="customModal">
             <div class="modal-box">
-
-                <div class="modal-icon">
-                    ✅
-                </div>
-
-                <div class="modal-message">
-                    ได้ทำการบันทึกข้อมูลเรียบร้อยแล้วค่ะ
-                </div>
-
-                <button
-                    class="modal-btn"
-                    onclick="closeModal()">
-                    ตกลง
-                </button>
-
+                <div class="modal-icon">✅</div>
+                <div class="modal-message">ได้ทำการบันทึกข้อมูลเรียบร้อยแล้วค่ะ</div>
+                <button class="modal-btn" onclick="closeModal()">ตกลง</button>
             </div>
+        </div>
 
+        <!-- Modal แจ้งเตือนวันหยุดซ้ำกัน -->
+        <div class="modal-overlay" id="dupModal">
+            <div class="dup-box">
+                <div class="dup-title" id="dupTitle"></div>
+                <div class="dup-content" id="dupContent"></div>
+                <div class="dup-actions" id="dupActions"></div>
+            </div>
         </div>
 
     </div>
 
-
-    <!-- ===================================================== -->
     <!-- Firebase SDK -->
-    <!-- ===================================================== -->
-
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
 
     <script>
 
@@ -1046,65 +438,32 @@
         // ============================================================
 
         const firebaseConfig = {
-
-            apiKey:
-                "AIzaSyBh4EEA1Dm9ikKH288qZwOHTqaU4-b_yk",
-
-            authDomain:
-                "lpnvac-1fae9.firebaseapp.com",
-
-            projectId:
-                "lpnvac-1fae9",
-
-            storageBucket:
-                "lpnvac-1fae9.firebasestorage.app",
-
-            messagingSenderId:
-                "711849836491",
-
-            appId:
-                "1:711849836491:web:5c2e18e35b66f12d7c404e"
-
+            apiKey: "AIzaSyBh4EEA1Dm9ikKH288qZwOHTqaU4-b_yk",
+            authDomain: "lpnvac-1fae9.firebaseapp.com",
+            projectId: "lpnvac-1fae9",
+            storageBucket: "lpnvac-1fae9.firebasestorage.app",
+            messagingSenderId: "711849836491",
+            appId: "1:711849836491:web:5c2e18e35b66f12d7c404e"
         };
-
 
         let db = null;
 
         try {
-
             firebase.initializeApp(firebaseConfig);
-
             db = firebase.firestore();
-
         } catch (e) {
-
             db = null;
-
         }
 
-
-        const dbStatusBanner =
-            document.getElementById('dbStatusBanner');
-
+        const dbStatusBanner = document.getElementById('dbStatusBanner');
 
         if (db) {
-
-            dbStatusBanner.textContent =
-                "✅ เชื่อมต่อฐานข้อมูลกลางแล้ว · ข้อมูลจะซิงค์ทุกเครื่องแบบเรียลไทม์";
-
-            dbStatusBanner.className =
-                "max-w-xl mx-auto mb-3 text-center text-xs font-semibold rounded-xl py-2 px-3 bg-emerald-50 text-emerald-700 border border-emerald-200";
-
+            dbStatusBanner.textContent = "✅ เชื่อมต่อฐานข้อมูลกลางแล้ว · ข้อมูลจะซิงค์ทุกเครื่องแบบเรียลไทม์";
+            dbStatusBanner.className = "max-w-xl mx-auto mb-3 text-center text-xs font-semibold rounded-xl py-2 px-3 bg-emerald-50 text-emerald-700 border border-emerald-200";
         } else {
-
-            dbStatusBanner.textContent =
-                "⚠️ ไม่สามารถเชื่อมต่อฐานข้อมูลกลางได้ · ตอนนี้ข้อมูลจะบันทึกเฉพาะเครื่องนี้เท่านั้น";
-
-            dbStatusBanner.className =
-                "max-w-xl mx-auto mb-3 text-center text-xs font-semibold rounded-xl py-2 px-3 bg-amber-50 text-amber-700 border border-amber-200";
-
+            dbStatusBanner.textContent = "⚠️ ไม่สามารถเชื่อมต่อฐานข้อมูลกลางได้ · ตอนนี้ข้อมูลจะบันทึกเฉพาะเครื่องนี้เท่านั้น";
+            dbStatusBanner.className = "max-w-xl mx-auto mb-3 text-center text-xs font-semibold rounded-xl py-2 px-3 bg-amber-50 text-amber-700 border border-amber-200";
         }
-
 
         // ============================================================
         // Data Store
@@ -1113,133 +472,59 @@
         const dataStore = {
 
             async getSetLPDay(dateStr) {
-
                 if (db) {
-
-                    const docSnap =
-                        await db
-                            .collection('setLP_daily')
-                            .doc(dateStr)
-                            .get();
-
-                    return docSnap.exists
-                        ? docSnap.data()
-                        : null;
+                    const docSnap = await db.collection('setLP_daily').doc(dateStr).get();
+                    return docSnap.exists ? docSnap.data() : null;
                 }
-
-                const saved =
-                    localStorage.getItem(`report_${dateStr}`);
-
-                return saved
-                    ? JSON.parse(saved)
-                    : null;
+                const saved = localStorage.getItem(`report_${dateStr}`);
+                return saved ? JSON.parse(saved) : null;
             },
-
 
             async setSetLPDay(dateStr, data) {
-
                 if (db) {
-
-                    await db
-                        .collection('setLP_daily')
-                        .doc(dateStr)
-                        .set(data);
-
+                    await db.collection('setLP_daily').doc(dateStr).set(data);
                     return;
                 }
-
-                localStorage.setItem(
-                    `report_${dateStr}`,
-                    JSON.stringify(data)
-                );
+                localStorage.setItem(`report_${dateStr}`, JSON.stringify(data));
             },
 
-
             async getLatestStockMeta(currentDateStr) {
-
                 if (db) {
-
-                    const docSnap =
-                        await db
-                            .collection('setLP_meta')
-                            .doc('latestStock')
-                            .get();
-
-                    return docSnap.exists &&
-                           docSnap.data().totalStock !== undefined
+                    const docSnap = await db.collection('setLP_meta').doc('latestStock').get();
+                    return docSnap.exists && docSnap.data().totalStock !== undefined
                         ? docSnap.data().totalStock
                         : '';
                 }
-
                 return scanLocalLatestStock(currentDateStr);
             },
 
-
             async setLatestStockMeta(totalStock) {
-
                 if (db) {
-
-                    await db
-                        .collection('setLP_meta')
-                        .doc('latestStock')
-                        .set({
-
-                            totalStock,
-
-                            updatedAt:
-                                new Date().toISOString()
-
-                        });
+                    await db.collection('setLP_meta').doc('latestStock').set({
+                        totalStock,
+                        updatedAt: new Date().toISOString()
+                    });
                 }
             },
-
 
             async getVacationMonth(monthKey) {
-
                 if (db) {
-
-                    const docSnap =
-                        await db
-                            .collection('vacation_leaves')
-                            .doc(monthKey)
-                            .get();
-
-                    return docSnap.exists
-                        ? docSnap.data()
-                        : null;
+                    const docSnap = await db.collection('vacation_leaves').doc(monthKey).get();
+                    return docSnap.exists ? docSnap.data() : null;
                 }
-
-                const saved =
-                    localStorage.getItem(
-                        `leave_data_${monthKey}`
-                    );
-
-                return saved
-                    ? JSON.parse(saved)
-                    : null;
+                const saved = localStorage.getItem(`leave_data_${monthKey}`);
+                return saved ? JSON.parse(saved) : null;
             },
 
-
             async setVacationMonth(monthKey, data) {
-
                 if (db) {
-
-                    await db
-                        .collection('vacation_leaves')
-                        .doc(monthKey)
-                        .set(data);
-
+                    await db.collection('vacation_leaves').doc(monthKey).set(data);
                     return;
                 }
-
-                localStorage.setItem(
-                    `leave_data_${monthKey}`,
-                    JSON.stringify(data)
-                );
+                localStorage.setItem(`leave_data_${monthKey}`, JSON.stringify(data));
             }
 
         };
-
 
         // ============================================================
         // Local Stock
@@ -1247,48 +532,27 @@
 
         function scanLocalLatestStock(currentDateStr) {
 
-            let targetDate =
-                new Date(currentDateStr);
+            let targetDate = new Date(currentDateStr);
 
             for (let i = 0; i < 365; i++) {
 
-                targetDate.setDate(
-                    targetDate.getDate() - 1
-                );
+                targetDate.setDate(targetDate.getDate() - 1);
 
-                const dateStr =
-                    getLocalDateString(targetDate);
-
-                const saved =
-                    localStorage.getItem(
-                        `report_${dateStr}`
-                    );
+                const dateStr = getLocalDateString(targetDate);
+                const saved = localStorage.getItem(`report_${dateStr}`);
 
                 if (saved) {
-
                     try {
-
-                        const parsed =
-                            JSON.parse(saved);
-
-                        if (
-                            parsed.totalStock !== undefined &&
-                            parsed.totalStock !== ''
-                        ) {
-
+                        const parsed = JSON.parse(saved);
+                        if (parsed.totalStock !== undefined && parsed.totalStock !== '') {
                             return parsed.totalStock;
-
                         }
-
                     } catch (e) {}
-
                 }
-
             }
 
             return '';
         }
-
 
         // ============================================================
         // Switch Tab
@@ -1296,258 +560,120 @@
 
         function switchTab(tabNum) {
 
-            const page1 =
-                document.getElementById('setLPPage');
-
-            const page2 =
-                document.getElementById('vacationPage');
-
-            const btn1 =
-                document.getElementById('tabBtn1');
-
-            const btn2 =
-                document.getElementById('tabBtn2');
-
+            const page1 = document.getElementById('setLPPage');
+            const page2 = document.getElementById('vacationPage');
+            const btn1 = document.getElementById('tabBtn1');
+            const btn2 = document.getElementById('tabBtn2');
 
             if (tabNum === 1) {
-
                 page1.classList.add('visible');
-
                 page2.classList.remove('visible');
-
                 btn1.classList.add('active-tab1');
-
                 btn2.classList.remove('active-tab2');
-
             } else {
-
                 page1.classList.remove('visible');
-
                 page2.classList.add('visible');
-
                 btn2.classList.add('active-tab2');
-
                 btn1.classList.remove('active-tab1');
-
             }
-
         }
-
 
         // ============================================================
         // Set LP
         // ============================================================
 
         const rooms = [
-
             { name: "ห้อง 1" },
-
             { name: "ห้อง 2" },
-
             { name: "ห้อง 3" },
-
             { name: "ห้อง 4" },
-
             { name: "เวรนอกเวลา" }
-
         ];
-
 
         const recorders = [
-
             "นุชราพรรณ",
-
             "กาญจนา",
-
             "ธิดารัตน์",
-
             "ณรงค์พล",
-
             "อิสรารัตน์",
-
             "เบญจมินทร์",
-
             "เยาวลักษณ์",
-
             "กิตติธัช"
-
         ];
 
-
-        const tableBody =
-            document.getElementById('tableBody');
-
-        const reportDateInput =
-            document.getElementById('reportDate');
-
-        const thaiDateText =
-            document.getElementById('thaiDateText');
-
-        const engDateText =
-            document.getElementById('engDateText');
-
-        const saveBtn =
-            document.getElementById('saveBtn');
-
-        const totalSetLPEl =
-            document.getElementById('totalSetLP');
-
-        const totalClothEl =
-            document.getElementById('totalCloth');
-
-        const statusText =
-            document.getElementById('statusText');
-
-        const todayBtn =
-            document.getElementById('todayBtn');
-
-        const prevDayBtn =
-            document.getElementById('prevDayBtn');
-
-        const nextDayBtn =
-            document.getElementById('nextDayBtn');
-
-        const totalStockInput =
-            document.getElementById('totalStockInput');
-
-        const todayStockInput =
-            document.getElementById('todayStockInput');
-
-        const setLPResultBadge =
-            document.getElementById('setLPResultBadge');
-
-        const stockWarningContainer =
-            document.getElementById('stockWarningContainer');
-
+        const tableBody = document.getElementById('tableBody');
+        const reportDateInput = document.getElementById('reportDate');
+        const thaiDateText = document.getElementById('thaiDateText');
+        const engDateText = document.getElementById('engDateText');
+        const saveBtn = document.getElementById('saveBtn');
+        const totalSetLPEl = document.getElementById('totalSetLP');
+        const totalClothEl = document.getElementById('totalCloth');
+        const statusText = document.getElementById('statusText');
+        const todayBtn = document.getElementById('todayBtn');
+        const prevDayBtn = document.getElementById('prevDayBtn');
+        const nextDayBtn = document.getElementById('nextDayBtn');
+        const totalStockInput = document.getElementById('totalStockInput');
+        const todayStockInput = document.getElementById('todayStockInput');
+        const setLPResultBadge = document.getElementById('setLPResultBadge');
+        const stockWarningContainer = document.getElementById('stockWarningContainer');
 
         function formatThaiDate(dateObj) {
 
             const thaiDays = [
-
-                "วันอาทิตย์",
-                "วันจันทร์",
-                "วันอังคาร",
-                "วันพุธ",
-                "วันพฤหัสบดี",
-                "วันศุกร์",
-                "วันเสาร์"
-
+                "วันอาทิตย์", "วันจันทร์", "วันอังคาร", "วันพุธ",
+                "วันพฤหัสบดี", "วันศุกร์", "วันเสาร์"
             ];
-
 
             const thaiMonths2 = [
-
-                "ม.ค.",
-                "ก.พ.",
-                "มี.ค.",
-                "เม.ย.",
-                "พ.ค.",
-                "มิ.ย.",
-                "ก.ค.",
-                "ส.ค.",
-                "ก.ย.",
-                "ต.ค.",
-                "พ.ย.",
-                "ธ.ค."
-
+                "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
+                "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."
             ];
 
-
-            const dayName =
-                thaiDays[dateObj.getDay()];
-
-            const dayNum =
-                dateObj.getDate();
-
-            const monthName =
-                thaiMonths2[dateObj.getMonth()];
-
-            const thaiYear =
-                dateObj.getFullYear() + 543;
-
+            const dayName = thaiDays[dateObj.getDay()];
+            const dayNum = dateObj.getDate();
+            const monthName = thaiMonths2[dateObj.getMonth()];
+            const thaiYear = dateObj.getFullYear() + 543;
 
             return `${dayName}ที่ ${dayNum} ${monthName} ${thaiYear}`;
-
         }
-
 
         function formatEngDate(dateObj) {
 
-            const options = {
+            const options = { day: 'numeric', month: 'short', year: 'numeric' };
 
-                day: 'numeric',
-
-                month: 'short',
-
-                year: 'numeric'
-
-            };
-
-            return dateObj.toLocaleDateString(
-                'en-US',
-                options
-            ) +
-            " BE " +
-            (dateObj.getFullYear() + 543);
-
+            return dateObj.toLocaleDateString('en-US', options) +
+                " BE " +
+                (dateObj.getFullYear() + 543);
         }
-
 
         function getLocalDateString(date) {
 
-            const yyyy =
-                date.getFullYear();
-
-            const mm =
-                String(
-                    date.getMonth() + 1
-                ).padStart(2, '0');
-
-            const dd =
-                String(
-                    date.getDate()
-                ).padStart(2, '0');
-
+            const yyyy = date.getFullYear();
+            const mm = String(date.getMonth() + 1).padStart(2, '0');
+            const dd = String(date.getDate()).padStart(2, '0');
 
             return `${yyyy}-${mm}-${dd}`;
-
         }
-
 
         let currentDate = new Date();
 
-
         async function updateDateDisplay() {
 
-            reportDateInput.value =
-                getLocalDateString(currentDate);
+            reportDateInput.value = getLocalDateString(currentDate);
+            thaiDateText.textContent = formatThaiDate(currentDate);
+            engDateText.textContent = formatEngDate(currentDate);
+            statusText.textContent = "กำลังโหลดข้อมูล...";
 
-            thaiDateText.textContent =
-                formatThaiDate(currentDate);
-
-            engDateText.textContent =
-                formatEngDate(currentDate);
-
-            statusText.textContent =
-                "กำลังโหลดข้อมูล...";
-
-            await loadDataForDate(
-                reportDateInput.value
-            );
-
+            await loadDataForDate(reportDateInput.value);
         }
-
 
         function initTable() {
 
             tableBody.innerHTML = '';
 
-
             rooms.forEach((room, index) => {
 
-                const tr =
-                    document.createElement('tr');
-
+                const tr = document.createElement('tr');
 
                 tr.innerHTML = `
 
@@ -1556,7 +682,6 @@
                     </td>
 
                     <td class="py-2 px-1 text-center">
-
                         <input
                             type="number"
                             min="0"
@@ -1564,11 +689,9 @@
                             data-row="${index}"
                             data-type="setLP"
                             class="data-input w-16 sm:w-20 text-center border border-slate-200 bg-slate-50/50 rounded-xl py-1.5 focus:outline-none focus:ring-2 focus:ring-[#1e4634] focus:bg-white text-slate-800 font-medium">
-
                     </td>
 
                     <td class="py-2 px-1 text-center">
-
                         <input
                             type="number"
                             min="0"
@@ -1576,11 +699,9 @@
                             data-row="${index}"
                             data-type="cloth"
                             class="data-input w-16 sm:w-20 text-center border border-slate-200 bg-slate-50/50 rounded-xl py-1.5 focus:outline-none focus:ring-2 focus:ring-[#1e4634] focus:bg-white text-slate-800 font-medium">
-
                     </td>
 
                     <td class="py-2 px-2 text-center">
-
                         <select
                             data-row="${index}"
                             data-type="recorder"
@@ -1588,407 +709,198 @@
 
                             <option value=""></option>
 
-                            ${recorders.map(
-                                name =>
-                                `<option value="${name}">${name}</option>`
-                            ).join('')}
+                            ${recorders.map(name => `<option value="${name}">${name}</option>`).join('')}
 
                         </select>
-
                     </td>
 
                 `;
 
-
                 tableBody.appendChild(tr);
-
             });
 
-
-            document
-                .querySelectorAll('.data-input')
-                .forEach(input => {
-
-                    input.addEventListener(
-                        'input',
-                        () => {
-
-                            calculateTotals();
-
-                            calculateSetLPResult();
-
-                        }
-                    );
-
+            document.querySelectorAll('.data-input').forEach(input => {
+                input.addEventListener('input', () => {
+                    calculateTotals();
+                    calculateSetLPResult();
                 });
-
+            });
         }
-
 
         function calculateTotals() {
 
             let sumSetLP = 0;
-
             let sumCloth = 0;
-
 
             rooms.forEach((_, index) => {
 
-                const setLPInput =
-                    document.querySelector(
-                        `input[data-row="${index}"][data-type="setLP"]`
-                    );
+                const setLPInput = document.querySelector(`input[data-row="${index}"][data-type="setLP"]`);
+                const clothInput = document.querySelector(`input[data-row="${index}"][data-type="cloth"]`);
 
-                const clothInput =
-                    document.querySelector(
-                        `input[data-row="${index}"][data-type="cloth"]`
-                    );
-
-
-                sumSetLP +=
-                    parseInt(setLPInput.value) || 0;
-
-                sumCloth +=
-                    parseInt(clothInput.value) || 0;
-
+                sumSetLP += parseInt(setLPInput.value) || 0;
+                sumCloth += parseInt(clothInput.value) || 0;
             });
 
-
-            totalSetLPEl.textContent =
-                sumSetLP;
-
-            totalClothEl.textContent =
-                sumCloth;
-
+            totalSetLPEl.textContent = sumSetLP;
+            totalClothEl.textContent = sumCloth;
         }
-
 
         function calculateSetLPResult() {
 
-            const todayStock =
-                parseInt(
-                    todayStockInput.value
-                ) || 0;
+            const todayStock = parseInt(todayStockInput.value) || 0;
+            const totalStock = parseInt(totalStockInput.value) || 0;
 
-            const totalStock =
-                parseInt(
-                    totalStockInput.value
-                ) || 0;
+            const result = todayStock - totalStock;
 
-
-            const result =
-                todayStock - totalStock;
-
-
-            setLPResultBadge.textContent =
-                result;
-
+            setLPResultBadge.textContent = result;
 
             if (result === 0) {
 
-                setLPResultBadge.className =
-                    "px-3 py-1 bg-emerald-100 text-emerald-800 font-bold rounded-lg text-sm";
-
-                stockWarningContainer.innerHTML =
-                    '<span class="text-emerald-600 font-semibold">✓ Set LP ครบถ้วนถูกต้อง</span>';
+                setLPResultBadge.className = "px-3 py-1 bg-emerald-100 text-emerald-800 font-bold rounded-lg text-sm";
+                stockWarningContainer.innerHTML = '<span class="text-emerald-600 font-semibold">✓ Set LP ครบถ้วนถูกต้อง</span>';
 
             } else if (result < 0) {
 
-                setLPResultBadge.className =
-                    "px-3 py-1 bg-red-100 text-red-600 font-bold rounded-lg text-sm";
-
-                stockWarningContainer.innerHTML =
-                    '<span class="text-red-600 font-bold animate-pulse">⚠️ Set LP ไม่ครบ โปรดติดต่อจ่ายกลาง</span>';
+                setLPResultBadge.className = "px-3 py-1 bg-red-100 text-red-600 font-bold rounded-lg text-sm";
+                stockWarningContainer.innerHTML = '<span class="text-red-600 font-bold animate-pulse">⚠️ Set LP ไม่ครบ โปรดติดต่อจ่ายกลาง</span>';
 
             } else {
 
-                setLPResultBadge.className =
-                    "px-3 py-1 bg-amber-100 text-amber-800 font-bold rounded-lg text-sm";
-
-                stockWarningContainer.innerHTML =
-                    '<span class="text-amber-600 font-semibold">ℹ️ ยอดเกินกว่า Stock ทั้งหมด</span>';
+                setLPResultBadge.className = "px-3 py-1 bg-amber-100 text-amber-800 font-bold rounded-lg text-sm";
+                stockWarningContainer.innerHTML = '<span class="text-amber-600 font-semibold">ℹ️ ยอดเกินกว่า Stock ทั้งหมด</span>';
 
             }
-
         }
 
-
-        totalStockInput.addEventListener(
-            'input',
-            calculateSetLPResult
-        );
-
-        todayStockInput.addEventListener(
-            'input',
-            calculateSetLPResult
-        );
-
+        totalStockInput.addEventListener('input', calculateSetLPResult);
+        todayStockInput.addEventListener('input', calculateSetLPResult);
 
         async function loadDataForDate(dateStr) {
 
             rooms.forEach((_, index) => {
 
-                document.querySelector(
-                    `input[data-row="${index}"][data-type="setLP"]`
-                ).value = '';
-
-                document.querySelector(
-                    `input[data-row="${index}"][data-type="cloth"]`
-                ).value = '';
-
-                document.querySelector(
-                    `select[data-row="${index}"][data-type="recorder"]`
-                ).value = '';
+                document.querySelector(`input[data-row="${index}"][data-type="setLP"]`).value = '';
+                document.querySelector(`input[data-row="${index}"][data-type="cloth"]`).value = '';
+                document.querySelector(`select[data-row="${index}"][data-type="recorder"]`).value = '';
 
             });
 
-
             totalStockInput.value = '';
-
             todayStockInput.value = '';
-
 
             let data;
 
-
             try {
 
-                data =
-                    await dataStore.getSetLPDay(
-                        dateStr
-                    );
+                data = await dataStore.getSetLPDay(dateStr);
 
             } catch (e) {
 
-                statusText.textContent =
-                    "⚠️ โหลดข้อมูลไม่สำเร็จ ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต";
-
+                statusText.textContent = "⚠️ โหลดข้อมูลไม่สำเร็จ ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต";
                 calculateTotals();
-
                 calculateSetLPResult();
-
                 return;
             }
 
-
             if (data) {
 
-                const roomList =
-                    data.rooms || data;
+                const roomList = data.rooms || data;
 
+                roomList.forEach((item, index) => {
 
-                roomList.forEach(
-                    (item, index) => {
+                    const setLPInput = document.querySelector(`input[data-row="${index}"][data-type="setLP"]`);
+                    const clothInput = document.querySelector(`input[data-row="${index}"][data-type="cloth"]`);
+                    const recorderSelect = document.querySelector(`select[data-row="${index}"][data-type="recorder"]`);
 
-                        const setLPInput =
-                            document.querySelector(
-                                `input[data-row="${index}"][data-type="setLP"]`
-                            );
-
-                        const clothInput =
-                            document.querySelector(
-                                `input[data-row="${index}"][data-type="cloth"]`
-                            );
-
-                        const recorderSelect =
-                            document.querySelector(
-                                `select[data-row="${index}"][data-type="recorder"]`
-                            );
-
-
-                        if (
-                            setLPInput &&
-                            item.setLP !== ''
-                        ) {
-                            setLPInput.value =
-                                item.setLP;
-                        }
-
-
-                        if (
-                            clothInput &&
-                            item.cloth !== ''
-                        ) {
-                            clothInput.value =
-                                item.cloth;
-                        }
-
-
-                        if (
-                            recorderSelect &&
-                            item.recorder
-                        ) {
-                            recorderSelect.value =
-                                item.recorder;
-                        }
-
+                    if (setLPInput && item.setLP !== '') {
+                        setLPInput.value = item.setLP;
                     }
-                );
 
+                    if (clothInput && item.cloth !== '') {
+                        clothInput.value = item.cloth;
+                    }
 
-                if (
-                    data.totalStock !== undefined
-                ) {
-                    totalStockInput.value =
-                        data.totalStock;
+                    if (recorderSelect && item.recorder) {
+                        recorderSelect.value = item.recorder;
+                    }
+                });
+
+                if (data.totalStock !== undefined) {
+                    totalStockInput.value = data.totalStock;
                 }
 
-
-                if (
-                    data.todayStock !== undefined
-                ) {
-                    todayStockInput.value =
-                        data.todayStock;
+                if (data.todayStock !== undefined) {
+                    todayStockInput.value = data.todayStock;
                 }
 
-
-                statusText.textContent =
-                    "มีข้อมูลของวันนี้แล้ว · สามารถแก้ไขและกดบันทึกทับได้";
+                statusText.textContent = "มีข้อมูลของวันนี้แล้ว · สามารถแก้ไขและกดบันทึกทับได้";
 
             } else {
 
-                const latestTotal =
-                    await dataStore.getLatestStockMeta(
-                        dateStr
-                    );
+                const latestTotal = await dataStore.getLatestStockMeta(dateStr);
 
-
-                if (
-                    latestTotal !== '' &&
-                    latestTotal !== undefined
-                ) {
-
-                    totalStockInput.value =
-                        latestTotal;
-
+                if (latestTotal !== '' && latestTotal !== undefined) {
+                    totalStockInput.value = latestTotal;
                 }
 
-
-                statusText.textContent =
-                    "ยังไม่มีข้อมูลของวันนี้ · กรอกแล้วกดบันทึกได้เลย";
+                statusText.textContent = "ยังไม่มีข้อมูลของวันนี้ · กรอกแล้วกดบันทึกได้เลย";
 
             }
 
-
             calculateTotals();
-
             calculateSetLPResult();
-
         }
-
 
         async function saveData_setLP() {
 
-            const dateStr =
-                reportDateInput.value;
-
+            const dateStr = reportDateInput.value;
 
             if (!dateStr) return;
 
-
             const roomsData = [];
 
+            rooms.forEach((room, index) => {
 
-            rooms.forEach(
-                (room, index) => {
+                const setLPVal = document.querySelector(`input[data-row="${index}"][data-type="setLP"]`).value;
+                const clothVal = document.querySelector(`input[data-row="${index}"][data-type="cloth"]`).value;
+                const recorderVal = document.querySelector(`select[data-row="${index}"][data-type="recorder"]`).value;
 
-                    const setLPVal =
-                        document.querySelector(
-                            `input[data-row="${index}"][data-type="setLP"]`
-                        ).value;
-
-                    const clothVal =
-                        document.querySelector(
-                            `input[data-row="${index}"][data-type="cloth"]`
-                        ).value;
-
-                    const recorderVal =
-                        document.querySelector(
-                            `select[data-row="${index}"][data-type="recorder"]`
-                        ).value;
-
-
-                    roomsData.push({
-
-                        room: room.name,
-
-                        setLP: setLPVal,
-
-                        cloth: clothVal,
-
-                        recorder: recorderVal
-
-                    });
-
-                }
-            );
-
+                roomsData.push({
+                    room: room.name,
+                    setLP: setLPVal,
+                    cloth: clothVal,
+                    recorder: recorderVal
+                });
+            });
 
             const currentCheckResult =
-                (
-                    parseInt(
-                        todayStockInput.value
-                    ) || 0
-                ) -
-                (
-                    parseInt(
-                        totalStockInput.value
-                    ) || 0
-                );
-
+                (parseInt(todayStockInput.value) || 0) -
+                (parseInt(totalStockInput.value) || 0);
 
             const fullDataToSave = {
-
-                totalStock:
-                    totalStockInput.value,
-
-                todayStock:
-                    todayStockInput.value,
-
-                checkResult:
-                    currentCheckResult,
-
-                rooms:
-                    roomsData,
-
-                savedAt:
-                    new Date().toISOString()
-
+                totalStock: totalStockInput.value,
+                todayStock: todayStockInput.value,
+                checkResult: currentCheckResult,
+                rooms: roomsData,
+                savedAt: new Date().toISOString()
             };
 
-
             saveBtn.disabled = true;
-
-            statusText.textContent =
-                "กำลังบันทึก...";
-
+            statusText.textContent = "กำลังบันทึก...";
 
             try {
 
-                await dataStore.setSetLPDay(
-                    dateStr,
-                    fullDataToSave
-                );
+                await dataStore.setSetLPDay(dateStr, fullDataToSave);
 
-
-                if (
-                    totalStockInput.value !== ''
-                ) {
-
-                    await dataStore.setLatestStockMeta(
-                        totalStockInput.value
-                    );
-
+                if (totalStockInput.value !== '') {
+                    await dataStore.setLatestStockMeta(totalStockInput.value);
                 }
 
-
-                statusText.textContent =
-                    "บันทึกข้อมูลเรียบร้อยแล้ว!";
+                statusText.textContent = "บันทึกข้อมูลเรียบร้อยแล้ว!";
 
             } catch (e) {
 
-                statusText.textContent =
-                    "⚠️ บันทึกไม่สำเร็จ ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองใหม่";
+                statusText.textContent = "⚠️ บันทึกไม่สำเร็จ ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองใหม่";
 
             } finally {
 
@@ -1996,589 +908,274 @@
 
             }
 
-
             setTimeout(() => {
-
-                statusText.textContent =
-                    "มีข้อมูลของวันนี้แล้ว · สามารถแก้ไขและกดบันทึกทับได้";
-
+                statusText.textContent = "มีข้อมูลของวันนี้แล้ว · สามารถแก้ไขและกดบันทึกทับได้";
             }, 3000);
-
         }
 
+        prevDayBtn.addEventListener('click', () => {
+            currentDate.setDate(currentDate.getDate() - 1);
+            updateDateDisplay();
+        });
 
-        prevDayBtn.addEventListener(
-            'click',
-            () => {
+        nextDayBtn.addEventListener('click', () => {
+            currentDate.setDate(currentDate.getDate() + 1);
+            updateDateDisplay();
+        });
 
-                currentDate.setDate(
-                    currentDate.getDate() - 1
-                );
+        todayBtn.addEventListener('click', () => {
+            currentDate = new Date();
+            updateDateDisplay();
+        });
 
+        reportDateInput.addEventListener('change', (e) => {
+            if (e.target.value) {
+                currentDate = new Date(e.target.value);
                 updateDateDisplay();
-
             }
-        );
+        });
 
-
-        nextDayBtn.addEventListener(
-            'click',
-            () => {
-
-                currentDate.setDate(
-                    currentDate.getDate() + 1
-                );
-
-                updateDateDisplay();
-
-            }
-        );
-
-
-        todayBtn.addEventListener(
-            'click',
-            () => {
-
-                currentDate =
-                    new Date();
-
-                updateDateDisplay();
-
-            }
-        );
-
-
-        reportDateInput.addEventListener(
-            'change',
-            (e) => {
-
-                if (e.target.value) {
-
-                    currentDate =
-                        new Date(e.target.value);
-
-                    updateDateDisplay();
-
-                }
-
-            }
-        );
-
-
-        saveBtn.addEventListener(
-            'click',
-            saveData_setLP
-        );
-
+        saveBtn.addEventListener('click', saveData_setLP);
 
         initTable();
-
         updateDateDisplay();
-
 
         // ============================================================
         // Vacation
         // ============================================================
 
+        // จำนวนคนที่ขอหยุดวันเดียวกันได้สูงสุด (ถ้าเกินนี้ระบบจะไม่บันทึก)
+        // วันที่มีคนขอหยุดรวม >= MAX_PER_DAY + 1 คน = ไม่สามารถบันทึกได้
+        const MAX_PER_DAY = 3;
+
         const names = [
-
             "คุณจิราพร",
-
             "คุณนุชราพรรณ",
-
             "คุณกาญจนา",
-
             "คุณธิดารัตน์",
-
             "คุณณรงค์พล",
-
             "คุณอิสรารัตน์",
-
             "คุณเบญจมินทร์",
-
             "คุณเยาวลักษณ์",
-
             "คุณกิตติธัช"
-
         ];
-
 
         const thaiHolidays = {
-
-            "2026-10-13":
-                "13 ต.ค. : วันคล้ายวันสวรรคต ร.9",
-
-            "2026-10-23":
-                "23 ต.ค. : วันปิยมหาราช",
-
-            "2026-12-05":
-                "5 ธ.ค. : วันพ่อแห่งชาติ",
-
-            "2026-12-07":
-                "7 ธ.ค. : วันหยุดชดเชยวันพ่อแห่งชาติ",
-
-            "2026-12-10":
-                "10 ธ.ค. : วันรัฐธรรมนูญ",
-
-            "2026-12-31":
-                "31 ธ.ค. : วันสิ้นปี",
-
-            "2027-01-01":
-                "1 ม.ค. : วันขึ้นปีใหม่",
-
-            "2027-04-06":
-                "6 เม.ย. : วันจักรี",
-
-            "2027-04-13":
-                "13 เม.ย. : วันสงกรานต์",
-
-            "2027-04-14":
-                "14 เม.ย. : วันสงกรานต์",
-
-            "2027-04-15":
-                "15 เม.ย. : วันสงกรานต์",
-
-            "2027-05-01":
-                "1 พ.ค. : วันแรงงานแห่งชาติ",
-
-            "2027-05-04":
-                "4 พ.ค. : วันฉัตรมงคล",
-
-            "2027-06-03":
-                "3 มิ.ย. : วันเฉลิมพระชนมพรรษา สมเด็จพระนางเจ้าฯ พระบรมราชินี",
-
-            "2027-07-28":
-                "28 ก.ค. : วันเฉลิมพระชนมพรรษา ร.10",
-
-            "2027-08-12":
-                "12 ส.ค. : วันแม่แห่งชาติ"
-
+            "2026-10-13": "13 ต.ค. : วันคล้ายวันสวรรคต ร.9",
+            "2026-10-23": "23 ต.ค. : วันปิยมหาราช",
+            "2026-12-05": "5 ธ.ค. : วันพ่อแห่งชาติ",
+            "2026-12-07": "7 ธ.ค. : วันหยุดชดเชยวันพ่อแห่งชาติ",
+            "2026-12-10": "10 ธ.ค. : วันรัฐธรรมนูญ",
+            "2026-12-31": "31 ธ.ค. : วันสิ้นปี",
+            "2027-01-01": "1 ม.ค. : วันขึ้นปีใหม่",
+            "2027-04-06": "6 เม.ย. : วันจักรี",
+            "2027-04-13": "13 เม.ย. : วันสงกรานต์",
+            "2027-04-14": "14 เม.ย. : วันสงกรานต์",
+            "2027-04-15": "15 เม.ย. : วันสงกรานต์",
+            "2027-05-01": "1 พ.ค. : วันแรงงานแห่งชาติ",
+            "2027-05-04": "4 พ.ค. : วันฉัตรมงคล",
+            "2027-06-03": "3 มิ.ย. : วันเฉลิมพระชนมพรรษา สมเด็จพระนางเจ้าฯ พระบรมราชินี",
+            "2027-07-28": "28 ก.ค. : วันเฉลิมพระชนมพรรษา ร.10",
+            "2027-08-12": "12 ส.ค. : วันแม่แห่งชาติ"
         };
 
-
         const thaiMonths = [
-
-            "มกราคม",
-
-            "กุมภาพันธ์",
-
-            "มีนาคม",
-
-            "เมษายน",
-
-            "พฤษภาคม",
-
-            "มิถุนายน",
-
-            "กรกฎาคม",
-
-            "สิงหาคม",
-
-            "กันยายน",
-
-            "ตุลาคม",
-
-            "พฤศจิกายน",
-
-            "ธันวาคม"
-
+            "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+            "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
         ];
 
-
         let rowSelections = {};
-
         let dirtyRows = new Set();
 
+        const leaveTableBody = document.getElementById('leaveTableBody');
 
-        const leaveTableBody =
-            document.getElementById(
-                'leaveTableBody'
-            );
+        names.forEach((name, index) => {
 
+            rowSelections[index] = [];
 
-        names.forEach(
-            (name, index) => {
+            const row = document.createElement('tr');
 
-                rowSelections[index] = [];
+            row.innerHTML = `
 
+                <td class="name-cell">
+                    <strong>${name}</strong>
+                </td>
 
-                const row =
-                    document.createElement('tr');
+                <td>
+                    <div class="selection-container">
 
+                        <div class="selection-tags" id="tags-${index}"></div>
 
-                row.innerHTML = `
+                        <select
+                            class="select-dropdown"
+                            id="select-${index}"
+                            onchange="addSelection(${index})">
 
-                    <td>
-                        <strong>${name}</strong>
-                    </td>
+                            <option value="">เลือก</option>
 
-                    <td>
+                            <optgroup label="วัน Off (x 1 ถึง x 31)">
+                                ${generateOptions('x')}
+                            </optgroup>
 
-                        <div class="selection-container">
+                            <optgroup label="วัน Vacation (v 1 ถึง v 31)">
+                                ${generateOptions('v')}
+                            </optgroup>
 
-                            <div
-                                class="selection-tags"
-                                id="tags-${index}">
-                            </div>
+                        </select>
 
-                            <select
-                                class="select-dropdown"
-                                id="select-${index}"
-                                onchange="addSelection(${index})">
+                    </div>
+                </td>
 
-                                <option value="">
-                                    เลือก
-                                </option>
+                <td class="date-display" id="created-${index}">-</td>
 
-                                <optgroup label="วัน Off (x 1 ถึง x 31)">
-                                    ${generateOptions('x')}
-                                </optgroup>
+                <td class="date-display" id="updated-${index}">-</td>
 
-                                <optgroup label="วัน Vacation (v 1 ถึง v 31)">
-                                    ${generateOptions('v')}
-                                </optgroup>
+            `;
 
-                            </select>
+            row.className = 'main-row';
+            leaveTableBody.appendChild(row);
 
-                        </div>
+            // แถว Note แยกอีกแถว อยู่ใต้ชื่อ
+            const noteRow = document.createElement('tr');
+            noteRow.className = 'note-row';
+            noteRow.innerHTML = `
+                <td colspan="4">
+                    <textarea class="note-input" rows="1" wrap="off" placeholder="Note ของ ${name}" id="note-${index}"></textarea>
+                </td>
+            `;
+            leaveTableBody.appendChild(noteRow);
 
-                    </td>
+            document.getElementById(`note-${index}`).addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') e.preventDefault();
+            });
 
-                    <td>
-
-                        <textarea
-                            class="note-input"
-                            placeholder="ระบุหมายเหตุ..."
-                            id="note-${index}">
-                        </textarea>
-
-                    </td>
-
-                    <td
-                        class="date-display"
-                        id="created-${index}">
-                        -
-                    </td>
-
-                    <td
-                        class="date-display"
-                        id="updated-${index}">
-                        -
-                    </td>
-
-                `;
-
-
-                leaveTableBody.appendChild(row);
-
-
-                document
-                    .getElementById(
-                        `note-${index}`
-                    )
-                    .addEventListener(
-                        'input',
-                        () => {
-
-                            dirtyRows.add(index);
-
-                        }
-                    );
-
-            }
-        );
-
+            document.getElementById(`note-${index}`).addEventListener('input', () => {
+                dirtyRows.add(index);
+            });
+        });
 
         function generateOptions(prefix) {
 
             let opts = '';
 
-
-            for (
-                let i = 1;
-                i <= 31;
-                i++
-            ) {
-
-                opts +=
-                    `<option value="${prefix} ${i}">${prefix} ${i}</option>`;
-
+            for (let i = 1; i <= 31; i++) {
+                opts += `<option value="${prefix} ${i}">${prefix} ${i}</option>`;
             }
 
-
             return opts;
-
         }
-
 
         function addSelection(index) {
 
-            const selectElem =
-                document.getElementById(
-                    `select-${index}`
-                );
-
-
-            const val =
-                selectElem.value;
-
+            const selectElem = document.getElementById(`select-${index}`);
+            const val = selectElem.value;
 
             if (!val) return;
 
-
-            if (
-                !rowSelections[index].includes(val)
-            ) {
-
+            if (!rowSelections[index].includes(val)) {
                 rowSelections[index].push(val);
-
                 renderTags(index);
-
                 dirtyRows.add(index);
-
             }
 
-
             selectElem.value = "";
-
         }
-
 
         function removeSelection(index, val) {
 
-            rowSelections[index] =
-                rowSelections[index].filter(
-                    item => item !== val
-                );
-
+            rowSelections[index] = rowSelections[index].filter(item => item !== val);
 
             renderTags(index);
-
             dirtyRows.add(index);
-
         }
-
 
         function renderTags(index) {
 
-            const container =
-                document.getElementById(
-                    `tags-${index}`
-                );
-
+            const container = document.getElementById(`tags-${index}`);
 
             container.innerHTML = '';
 
+            rowSelections[index].forEach(item => {
 
-            rowSelections[index].forEach(
-                item => {
+                const tag = document.createElement('div');
 
-                    const tag =
-                        document.createElement('div');
-
-
-                    if (
-                        item.startsWith('x')
-                    ) {
-
-                        tag.className =
-                            'tag-x';
-
-                    } else {
-
-                        tag.className =
-                            'tag-v';
-
-                    }
-
-
-                    tag.innerHTML =
-                        `${item} <span class="tag-remove" onclick="removeSelection(${index}, '${item}')">×</span>`;
-
-
-                    container.appendChild(tag);
-
+                if (item.startsWith('x')) {
+                    tag.className = 'tag-x';
+                } else {
+                    tag.className = 'tag-v';
                 }
-            );
 
+                tag.innerHTML = `${item} <span class="tag-remove" onclick="removeSelection(${index}, '${item}')">×</span>`;
+
+                container.appendChild(tag);
+            });
         }
-
 
         function getFormattedDateOnly() {
 
-            const now =
-                new Date();
+            const now = new Date();
 
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
 
-            const options = {
-
-                year: 'numeric',
-
-                month: 'short',
-
-                day: 'numeric'
-
-            };
-
-
-            return now.toLocaleDateString(
-                'th-TH',
-                options
-            );
-
+            return now.toLocaleDateString('th-TH', options);
         }
-
 
         async function changeMonth() {
 
             renderCalendar();
 
             await loadMonthData();
-
         }
-
 
         function renderCalendar() {
 
-            const select =
-                document.getElementById(
-                    'monthYearSelect'
-                );
+            const select = document.getElementById('monthYearSelect');
+            const value = select.value;
 
+            const [yearStr, monthStr] = value.split('-');
 
-            const value =
-                select.value;
+            const year = parseInt(yearStr);
+            const month = parseInt(monthStr) - 1;
 
+            const monthName = thaiMonths[month];
+            const thaiYear = year + 543;
 
-            const [yearStr, monthStr] =
-                value.split('-');
+            document.getElementById('colHeaderMonth').innerText = `(${monthName} ${thaiYear})`;
+            document.getElementById('calMonthTitle').innerText = `ปฏิทินเดือน ${monthName} พ.ศ. ${thaiYear}`;
 
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const totalDays = new Date(year, month + 1, 0).getDate();
 
-            const year =
-                parseInt(yearStr);
+            const grid = document.getElementById('calendarGrid');
 
-
-            const month =
-                parseInt(monthStr) - 1;
-
-
-            const monthName =
-                thaiMonths[month];
-
-
-            const thaiYear =
-                year + 543;
-
-
-            document.getElementById(
-                'colHeaderMonth'
-            ).innerText =
-                `(${monthName} ${thaiYear})`;
-
-
-            document.getElementById(
-                'calMonthTitle'
-            ).innerText =
-                `ปฏิทินเดือน ${monthName} พ.ศ. ${thaiYear}`;
-
-
-            const firstDayIndex =
-                new Date(
-                    year,
-                    month,
-                    1
-                ).getDay();
-
-
-            const totalDays =
-                new Date(
-                    year,
-                    month + 1,
-                    0
-                ).getDate();
-
-
-            const grid =
-                document.getElementById(
-                    'calendarGrid'
-                );
-
-
-            while (
-                grid.children.length > 7
-            ) {
-
-                grid.removeChild(
-                    grid.lastChild
-                );
-
+            while (grid.children.length > 7) {
+                grid.removeChild(grid.lastChild);
             }
 
+            for (let i = 0; i < firstDayIndex; i++) {
 
-            for (
-                let i = 0;
-                i < firstDayIndex;
-                i++
-            ) {
+                const emptyCell = document.createElement('div');
 
-                const emptyCell =
-                    document.createElement('div');
+                emptyCell.className = 'calendar-day empty';
 
-
-                emptyCell.className =
-                    'calendar-day empty';
-
-
-                grid.appendChild(
-                    emptyCell
-                );
-
+                grid.appendChild(emptyCell);
             }
-
 
             let holidayMessages = [];
 
+            for (let day = 1; day <= totalDays; day++) {
 
-            for (
-                let day = 1;
-                day <= totalDays;
-                day++
-            ) {
+                const dayCell = document.createElement('div');
 
-                const dayCell =
-                    document.createElement('div');
+                dayCell.className = 'calendar-day';
+                dayCell.innerText = day;
 
+                const currentDayOfWeek = new Date(year, month, day).getDay();
 
-                dayCell.className =
-                    'calendar-day';
+                const mm = String(month + 1).padStart(2, '0');
+                const dd = String(day).padStart(2, '0');
 
-
-                dayCell.innerText =
-                    day;
-
-
-                const currentDayOfWeek =
-                    new Date(
-                        year,
-                        month,
-                        day
-                    ).getDay();
-
-
-                const mm =
-                    String(
-                        month + 1
-                    ).padStart(2, '0');
-
-
-                const dd =
-                    String(day)
-                    .padStart(2, '0');
-
-
-                const dateKey =
-                    `${year}-${mm}-${dd}`;
-
+                const dateKey = `${year}-${mm}-${dd}`;
 
                 if (
                     currentDayOfWeek === 0 ||
@@ -2586,205 +1183,271 @@
                     thaiHolidays[dateKey]
                 ) {
 
-                    dayCell.classList.add(
-                        'holiday'
-                    );
+                    dayCell.classList.add('holiday');
 
-
-                    if (
-                        thaiHolidays[dateKey]
-                    ) {
-
-                        holidayMessages.push(
-                            thaiHolidays[dateKey]
-                        );
-
+                    if (thaiHolidays[dateKey]) {
+                        holidayMessages.push(thaiHolidays[dateKey]);
                     }
-
                 }
 
-
-                grid.appendChild(
-                    dayCell
-                );
-
+                grid.appendChild(dayCell);
             }
 
+            const holidayListContent = document.getElementById('holidayListContent');
 
-            const holidayListContent =
-                document.getElementById(
-                    'holidayListContent'
-                );
+            if (holidayMessages.length > 0) {
 
-
-            if (
-                holidayMessages.length > 0
-            ) {
-
-                holidayListContent.innerHTML =
-                    [
-                        ...new Set(
-                            holidayMessages
-                        )
-                    ].join('<br>');
+                holidayListContent.innerHTML = [...new Set(holidayMessages)].join('<br>');
 
             } else {
 
-                holidayListContent.innerHTML =
-                    "- ไม่มีวันหยุดนักขัตฤกษ์หรือวันหยุดชดเชยพิเศษในเดือนนี้ -";
+                holidayListContent.innerHTML = "- ไม่มีวันหยุดนักขัตฤกษ์หรือวันหยุดชดเชยพิเศษในเดือนนี้ -";
 
             }
-
         }
 
+        // ============================================================
+        // ตรวจสอบวันหยุดซ้ำกันก่อนบันทึก
+        // ============================================================
 
-        async function saveData() {
+        function shortName(fullName) {
+            return fullName.replace(/^คุณ/, '');
+        }
 
-            const currentMonthKey =
-                document.getElementById(
-                    'monthYearSelect'
-                ).value;
+        function analyzeConflicts() {
 
+            const monthKey = document.getElementById('monthYearSelect').value;
+            const [yearStr, monthStr] = monthKey.split('-');
+            const thaiYear = parseInt(yearStr) + 543;
+            const monthName = thaiMonths[parseInt(monthStr) - 1];
+
+            // รวมรายชื่อคนที่ขอหยุดในแต่ละวัน
+            const dayMap = {};
+
+            names.forEach((name, index) => {
+
+                const seen = new Set();
+
+                (rowSelections[index] || []).forEach(sel => {
+
+                    const parts = sel.split(' ');
+                    const type = parts[0];
+                    const day = parseInt(parts[1]);
+
+                    if (seen.has(day)) return; // คนเดียวกัน วันเดียวกัน นับครั้งเดียว
+                    seen.add(day);
+
+                    if (!dayMap[day]) dayMap[day] = [];
+
+                    dayMap[day].push({
+                        index: index,
+                        name: shortName(name),
+                        type: type === 'v' ? 'vac' : 'off'
+                    });
+                });
+            });
+
+            const warnings = [];
+            const blocked = [];
+
+            Object.keys(dayMap)
+                .map(Number)
+                .sort((a, b) => a - b)
+                .forEach(day => {
+
+                    const list = dayMap[day];
+                    const total = list.length;
+
+                    // ตรวจเฉพาะวันที่แถวที่เพิ่งแก้ไขเกี่ยวข้อง
+                    const touched = list.some(p => dirtyRows.has(p.index));
+
+                    if (!touched || total < 2) return;
+
+                    // แสดงรายชื่อ "คนที่ขอไว้ก่อนแล้ว" (ไม่รวมแถวที่เพิ่งแก้ไข)
+                    let shown = list.filter(p => !dirtyRows.has(p.index));
+                    if (shown.length === 0) shown = list;
+
+                    const entry = {
+                        label: `วันที่ ${day} ${monthName} ${thaiYear}`,
+                        people: shown
+                    };
+
+                    if (total > MAX_PER_DAY) {
+                        blocked.push(entry);
+                    } else {
+                        warnings.push(entry);
+                    }
+                });
+
+            return { warnings, blocked };
+        }
+
+        function buildPeopleHtml(people) {
+
+            return people.map(p =>
+                `<div class="dup-person">${p.name} ขอ <span class="${p.type === 'vac' ? 't-vac' : 't-off'}">${p.type}</span></div>`
+            ).join('');
+        }
+
+        function showDupModal(kind, entries, onConfirm) {
+
+            const title = document.getElementById('dupTitle');
+            const content = document.getElementById('dupContent');
+            const actions = document.getElementById('dupActions');
+
+            let html = '';
+
+            entries.forEach(e => {
+
+                html += `
+                    <div class="dup-day ${kind === 'block' ? 'is-block' : ''}">
+                        <div class="dup-day-head">${e.label}</div>
+                        <div>มีคนขอหยุดซ้ำกัน ${e.people.length} คน คือ</div>
+                        ${buildPeopleHtml(e.people)}
+                        ${kind === 'block'
+                            ? '<div class="dup-block-msg">- ไม่สามารถขอหยุดได้ -</div><div class="dup-block-sub">(ระบบไม่บันทึกข้อมูล)</div>'
+                            : ''}
+                    </div>`;
+            });
+
+            content.innerHTML = html;
+
+            if (kind === 'block') {
+
+                title.className = 'dup-title block';
+                title.textContent = '⛔ ไม่สามารถบันทึกข้อมูลได้';
+
+                actions.innerHTML = '<button class="modal-btn" id="dupOkBtn">ตกลง</button>';
+
+                document.getElementById('dupOkBtn').onclick = function () {
+                    closeDupModal();
+                    if (onConfirm) onConfirm();
+                };
+
+            } else {
+
+                title.className = 'dup-title warn';
+                title.textContent = '⚠️ มีการขอหยุดซ้ำกัน';
+
+                actions.innerHTML =
+                    '<button class="btn-cancel" onclick="closeDupModal()">กลับไปแก้ไข</button>' +
+                    '<button class="modal-btn" id="dupConfirmBtn">ยืนยันบันทึก</button>';
+
+                document.getElementById('dupConfirmBtn').onclick = function () {
+                    closeDupModal();
+                    onConfirm();
+                };
+            }
+
+            document.getElementById('dupModal').style.display = 'flex';
+        }
+
+        function closeDupModal() {
+            document.getElementById('dupModal').style.display = 'none';
+        }
+
+        // ============================================================
+        // Save
+        // ============================================================
+
+        function saveData() {
+
+            const { warnings, blocked } = analyzeConflicts();
+
+            // มีวันที่ซ้ำเกินกำหนด -> เด้งทีละวัน แล้วไม่บันทึก
+            if (blocked.length > 0) {
+                runDupQueue('block', blocked, 0, null);
+                return;
+            }
+
+            // มีวันซ้ำแต่ยังไม่เกินกำหนด -> เด้งทีละวัน ยืนยันครบทุกวันจึงบันทึก
+            if (warnings.length > 0) {
+                runDupQueue('warn', warnings, 0, doSaveData);
+                return;
+            }
+
+            doSaveData();
+        }
+
+        // แสดง popup ทีละวัน
+        function runDupQueue(kind, entries, i, onAllDone) {
+
+            if (i >= entries.length) {
+                if (onAllDone) onAllDone();
+                return;
+            }
+
+            showDupModal(kind, [entries[i]], function () {
+                runDupQueue(kind, entries, i + 1, onAllDone);
+            });
+        }
+
+        async function doSaveData() {
+
+            const currentMonthKey = document.getElementById('monthYearSelect').value;
 
             let monthData = {};
 
+            const dateString = getFormattedDateOnly();
 
-            const dateString =
-                getFormattedDateOnly();
+            names.forEach((_, index) => {
 
+                const createdCell = document.getElementById(`created-${index}`);
+                const updatedCell = document.getElementById(`updated-${index}`);
 
-            names.forEach(
-                (_, index) => {
+                let currentCreated = createdCell.textContent;
+                let currentUpdated = updatedCell.textContent;
 
-                    const createdCell =
-                        document.getElementById(
-                            `created-${index}`
-                        );
+                if (dirtyRows.has(index)) {
 
-
-                    const updatedCell =
-                        document.getElementById(
-                            `updated-${index}`
-                        );
-
-
-                    let currentCreated =
-                        createdCell.textContent;
-
-
-                    let currentUpdated =
-                        updatedCell.textContent;
-
-
-                    if (
-                        dirtyRows.has(index)
-                    ) {
-
-                        if (
-                            currentCreated === '-'
-                        ) {
-
-                            currentCreated =
-                                dateString;
-
-                        } else {
-
-                            currentUpdated =
-                                dateString;
-
-                        }
-
+                    if (currentCreated === '-') {
+                        currentCreated = dateString;
+                    } else {
+                        currentUpdated = dateString;
                     }
-
-
-                    monthData[index] = {
-
-                        selections:
-                            rowSelections[index],
-
-                        note:
-                            document.getElementById(
-                                `note-${index}`
-                            ).value,
-
-                        created:
-                            currentCreated,
-
-                        updated:
-                            currentUpdated
-
-                    };
-
-
-                    createdCell.textContent =
-                        currentCreated;
-
-
-                    updatedCell.textContent =
-                        currentUpdated;
-
                 }
-            );
 
+                monthData[index] = {
+                    selections: rowSelections[index],
+                    note: document.getElementById(`note-${index}`).value,
+                    created: currentCreated,
+                    updated: currentUpdated
+                };
+
+                createdCell.textContent = currentCreated;
+                updatedCell.textContent = currentUpdated;
+            });
 
             try {
 
-                await dataStore.setVacationMonth(
-                    currentMonthKey,
-                    monthData
-                );
-
+                await dataStore.setVacationMonth(currentMonthKey, monthData);
 
                 dirtyRows.clear();
 
-
-                document.getElementById(
-                    'customModal'
-                ).style.display =
-                    'flex';
-
+                document.getElementById('customModal').style.display = 'flex';
 
             } catch (e) {
 
-                alert(
-                    'บันทึกไม่สำเร็จ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต แล้วลองใหม่อีกครั้ง'
-                );
+                alert('บันทึกไม่สำเร็จ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต แล้วลองใหม่อีกครั้ง');
 
             }
-
         }
-
 
         function closeModal() {
-
-            document.getElementById(
-                'customModal'
-            ).style.display =
-                'none';
-
+            document.getElementById('customModal').style.display = 'none';
         }
-
 
         async function loadMonthData() {
 
-            const currentMonthKey =
-                document.getElementById(
-                    'monthYearSelect'
-                ).value;
-
+            const currentMonthKey = document.getElementById('monthYearSelect').value;
 
             dirtyRows.clear();
 
-
             let monthData = null;
-
 
             try {
 
-                monthData =
-                    await dataStore.getVacationMonth(
-                        currentMonthKey
-                    );
+                monthData = await dataStore.getVacationMonth(currentMonthKey);
 
             } catch (e) {
 
@@ -2792,125 +1455,57 @@
 
             }
 
+            names.forEach((_, index) => {
 
-            names.forEach(
-                (_, index) => {
+                const noteField = document.getElementById(`note-${index}`);
+                const createdCell = document.getElementById(`created-${index}`);
+                const updatedCell = document.getElementById(`updated-${index}`);
 
-                    const noteField =
-                        document.getElementById(
-                            `note-${index}`
-                        );
+                if (monthData && monthData[index]) {
 
+                    rowSelections[index] = monthData[index].selections || [];
 
-                    const createdCell =
-                        document.getElementById(
-                            `created-${index}`
-                        );
+                    renderTags(index);
 
+                    noteField.value = monthData[index].note || "";
+                    createdCell.textContent = monthData[index].created || "-";
+                    updatedCell.textContent = monthData[index].updated || "-";
 
-                    const updatedCell =
-                        document.getElementById(
-                            `updated-${index}`
-                        );
+                } else {
 
+                    rowSelections[index] = [];
 
-                    if (
-                        monthData &&
-                        monthData[index]
-                    ) {
+                    renderTags(index);
 
-                        rowSelections[index] =
-                            monthData[index]
-                                .selections || [];
-
-
-                        renderTags(index);
-
-
-                        noteField.value =
-                            monthData[index]
-                                .note || "";
-
-
-                        createdCell.textContent =
-                            monthData[index]
-                                .created || "-";
-
-
-                        updatedCell.textContent =
-                            monthData[index]
-                                .updated || "-";
-
-                    } else {
-
-                        rowSelections[index] =
-                            [];
-
-
-                        renderTags(index);
-
-
-                        noteField.value =
-                            "";
-
-
-                        createdCell.textContent =
-                            "-";
-
-
-                        updatedCell.textContent =
-                            "-";
-
-                    }
+                    noteField.value = "";
+                    createdCell.textContent = "-";
+                    updatedCell.textContent = "-";
 
                 }
-            );
-
+            });
         }
 
-
         // เริ่มต้นหน้า Vacation
-
         changeMonth();
 
-
         // ============================================================
-        // ===================== PWA SERVICE WORKER ===================
+        // PWA SERVICE WORKER
         // ============================================================
 
-        if (
-            'serviceWorker' in navigator
-        ) {
+        if ('serviceWorker' in navigator) {
 
-            window.addEventListener(
-                'load',
-                () => {
+            window.addEventListener('load', () => {
 
-                    navigator.serviceWorker
-                        .register('./sw.js')
-                        .then(
-                            registration => {
+                navigator.serviceWorker
+                    .register('./sw.js')
+                    .then(registration => {
+                        console.log('Anes PBH PWA พร้อมใช้งาน', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('Service Worker error:', error);
+                    });
 
-                                console.log(
-                                    'Anes PBH PWA พร้อมใช้งาน',
-                                    registration.scope
-                                );
-
-                            }
-                        )
-                        .catch(
-                            error => {
-
-                                console.log(
-                                    'Service Worker error:',
-                                    error
-                                );
-
-                            }
-                        );
-
-                }
-            );
+            });
 
         }
 
