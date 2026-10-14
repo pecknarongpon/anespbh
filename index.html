@@ -159,6 +159,9 @@
         }
         #vacationPage .btn-save:hover { background-color: #163426; }
         #vacationPage .btn-save:active { transform: scale(0.97); }
+        #vacationPage .btn-save:disabled {
+            background-color: #cbd5e1; color: #94a3b8; box-shadow: none; cursor: not-allowed; transform: none;
+        }
 
         #vacationPage .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -399,7 +402,7 @@
             </table>
 
             <div class="action-bar">
-                <button class="btn-save" onclick="saveData()">บันทึกข้อมูล</button>
+                <button class="btn-save" id="vacSaveBtn" onclick="saveData()">บันทึกข้อมูล</button>
             </div>
 
             <div class="footer-org">
@@ -1077,9 +1080,28 @@
                 rowSelections[index].push(val);
                 renderTags(index);
                 dirtyRows.add(index);
+
+                // เลือกวันที่ทำให้เกินกำหนด -> เด้งแจ้งทันที และล็อกปุ่มบันทึก
+                const day = parseInt(val.split(' ')[1]);
+                const blocked = refreshSaveState();
+                const mine = blocked.filter(e => e.label.startsWith(`วันที่ ${day} `));
+                if (mine.length > 0) {
+                    showDupModal('block', mine, null);
+                }
             }
 
             selectElem.value = "";
+        }
+
+        // ล็อก/ปลดล็อกปุ่มบันทึก ตามว่ามีวันที่เกินกำหนดหรือไม่
+        function refreshSaveState() {
+
+            const { blocked } = analyzeConflicts();
+            const btn = document.getElementById('vacSaveBtn');
+
+            if (btn) btn.disabled = blocked.length > 0;
+
+            return blocked;
         }
 
         function removeSelection(index, val) {
@@ -1088,6 +1110,7 @@
 
             renderTags(index);
             dirtyRows.add(index);
+            refreshSaveState();
         }
 
         function renderTags(index) {
@@ -1481,6 +1504,8 @@
 
                 }
             });
+
+            refreshSaveState();
         }
 
         // เริ่มต้นหน้า Vacation
