@@ -1791,3 +1791,353 @@
 
 </body>
 </html>
+/* ==================================================================
+   MODERN SKIN · เรียบหรู สดใส มินิมอล  (CSS only — ไม่แก้ HTML/JS)
+   วางบล็อกนี้ก่อน </head> เป็น <style> ตัวสุดท้าย
+   ================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap');
+
+:root {
+    --font: 'IBM Plex Sans Thai', 'Sarabun', system-ui, sans-serif;
+    --canvas: #f1f6f3;
+    --card: #ffffff;
+    --ink: #0f2e24;
+    --ink-2: #4b645a;
+    --ink-3: #5c7167;
+    --line: #e1eae5;
+    --mint: #ddf3e8;
+    --mint-2: #edf8f2;
+    --jade: #08805f;
+    --jade-dark: #066b4f;
+    --jade-ring: rgba(8, 128, 95, .16);
+    --coral: #c93a3f;
+    --coral-bg: #fde8e8;
+    --amber: #8a5a00;
+    --amber-bg: #fcf0cf;
+    --shadow-card: 0 1px 2px rgba(15, 46, 36, .04), 0 14px 34px -14px rgba(15, 46, 36, .12);
+}
+
+/* ---------- พื้นฐาน ---------- */
+html body.bg-slate-100 {
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
+    font-variant-numeric: tabular-nums;
+}
+html body .kanit,
+html body button,
+html body input,
+html body select,
+html body textarea { font-family: var(--font); }
+
+html body :focus-visible { outline: 2px solid var(--jade); outline-offset: 2px; }
+
+/* ---------- แถบแท็บ : ชิ้นสีเขียวเลื่อนตามแท็บที่เลือก (จุดเด่นของหน้า) ---------- */
+html body .tab-bar {
+    position: relative;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+    max-width: 36rem; padding: 4px; margin: 0 auto 16px auto;
+    background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+    box-shadow: none;
+}
+html body:has(#vacationPage.visible) .tab-bar { max-width: 1150px; }
+
+html body .tab-bar::before {
+    content: ""; position: absolute; z-index: 0;
+    top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px);
+    border-radius: 14px; background: var(--jade);
+    transition: transform .34s cubic-bezier(.3, .8, .2, 1);
+}
+html body .tab-bar:has(#tabBtn2.active-tab2)::before { transform: translateX(100%); }
+
+html body .tab-bar .tab-btn {
+    position: relative; z-index: 1;
+    padding: 11px 8px; border-radius: 14px;
+    font-family: var(--font); font-size: .95rem; font-weight: 500;
+    color: var(--ink-2); background: transparent; box-shadow: none;
+    transition: color .25s ease;
+}
+html body .tab-bar .tab-btn:hover { color: var(--ink); }
+html body .tab-bar .tab-btn.active-tab1,
+html body .tab-bar .tab-btn.active-tab2 {
+    background: transparent; box-shadow: none; color: #fff; font-weight: 600;
+}
+/* เบราว์เซอร์เก่าที่ไม่รองรับ :has */
+@supports not selector(:has(*)) {
+    html body .tab-bar::before { display: none; }
+    html body .tab-bar .tab-btn.active-tab1,
+    html body .tab-bar .tab-btn.active-tab2 { background: var(--jade); }
+}
+
+/* ---------- แบนเนอร์สถานะฐานข้อมูล ---------- */
+#dbStatusBanner {
+    border: none; border-radius: 12px; font-weight: 500; font-size: .78rem;
+    padding: 8px 12px; background: var(--mint-2); color: var(--jade-dark);
+}
+#dbStatusBanner.bg-amber-50 { background: var(--amber-bg); color: var(--amber); }
+
+/* =================================================================
+   หน้า 1 : รายงาน Set LP
+   ================================================================= */
+#setLPPage > div {
+    background: var(--card); border: 1px solid var(--line); border-radius: 28px;
+    box-shadow: var(--shadow-card); padding: 26px 22px;
+}
+@media (min-width: 640px) { #setLPPage > div { padding: 30px 30px; } }
+
+/* หัวเรื่อง */
+#setLPPage > div > div:first-child { border-bottom: 1px solid var(--line); padding-bottom: 18px; margin-bottom: 20px; }
+#setLPPage h1 { color: var(--ink); font-size: 1.4rem; font-weight: 600; line-height: 1.3; margin-bottom: 4px; }
+#setLPPage h1 + p { color: var(--ink-2); font-weight: 400; }
+#setLPPage h1 + p + p { color: var(--ink-3); }
+
+/* ตัวเลือกวัน */
+#setLPPage .bg-slate-50 {
+    background: var(--canvas); border: none; box-shadow: none; border-radius: 20px; padding: 10px 12px;
+}
+#setLPPage #thaiDateText { color: var(--ink); font-weight: 600; font-size: 1rem; white-space: nowrap; }
+#setLPPage #engDateText { white-space: nowrap; }
+#setLPPage #engDateText { color: var(--ink-3); font-size: .78rem; }
+#setLPPage #prevDayBtn,
+#setLPPage #nextDayBtn {
+    width: 38px; height: 38px; border-radius: 50%; background: var(--card);
+    border: 1px solid var(--line); box-shadow: none; color: var(--ink-2);
+    font-size: 1.15rem; font-weight: 500; transition: background .2s, color .2s, border-color .2s;
+}
+#setLPPage #prevDayBtn:hover,
+#setLPPage #nextDayBtn:hover { background: var(--mint); border-color: var(--mint); color: var(--jade-dark); }
+#setLPPage #todayBtn {
+    height: 38px; padding: 0 14px; border-radius: 999px; border: none; box-shadow: none; white-space: nowrap;
+    background: var(--mint); color: var(--jade-dark); font-weight: 600; font-size: .82rem;
+    transition: background .2s;
+}
+#setLPPage #todayBtn:hover { background: #cdeedd; }
+
+/* ช่อง Stock */
+#setLPPage .bg-emerald-50\/50 {
+    background: var(--mint-2); border: none; box-shadow: none; border-radius: 22px; padding: 18px;
+}
+#setLPPage .bg-emerald-50\/50 h2 { color: var(--jade-dark); font-size: .95rem; font-weight: 600; }
+#setLPPage .bg-emerald-50\/50 label { color: var(--ink-2); font-weight: 500; font-size: .8rem; }
+#setLPPage .bg-emerald-50\/50 > .bg-white {
+    background: var(--card); border: none; box-shadow: none; border-radius: 16px; padding: 12px 14px;
+}
+#setLPPage .bg-emerald-50\/50 > .bg-white .text-slate-700 { color: var(--ink-2); font-weight: 500; }
+
+/* ช่องกรอกตัวเลข / dropdown (ทั้งแถวตารางและช่อง Stock) */
+#setLPPage input[type="number"],
+#setLPPage select {
+    height: 42px; padding-top: 0; padding-bottom: 0;
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px; box-shadow: none;
+    color: var(--ink); font-weight: 500;
+    transition: border-color .18s, box-shadow .18s, background .18s;
+}
+#setLPPage #tableBody input[type="number"],
+#setLPPage #tableBody select { background: #f7faf8; }
+#setLPPage input[type="number"]::placeholder { color: #9bafa5; font-weight: 400; }
+#setLPPage input[type="number"]:focus,
+#setLPPage select:focus {
+    background: var(--card); border-color: var(--jade); box-shadow: 0 0 0 4px var(--jade-ring); outline: none;
+}
+
+/* ผลตรวจเช็ค */
+#setLPResultBadge {
+    min-width: 40px; text-align: center; border-radius: 999px; padding: 4px 14px;
+    background: #e8efeb; color: var(--ink); font-weight: 600;
+}
+#setLPResultBadge.bg-emerald-100 { background: #d3f2e3; color: #06684e; }
+#setLPResultBadge.bg-red-100     { background: var(--coral-bg); color: #b42328; }
+#setLPResultBadge.bg-amber-100   { background: var(--amber-bg); color: var(--amber); }
+#stockWarningContainer { color: var(--ink-3); font-weight: 500; }
+#stockWarningContainer .text-emerald-600 { color: #0a7a5a; }
+#stockWarningContainer .text-red-600     { color: var(--coral); }
+#stockWarningContainer .text-amber-600   { color: var(--amber); }
+
+/* ตาราง : หัวตารางเงียบ, แถวรวมเป็นจุดเน้น */
+#setLPPage .overflow-x-auto {
+    border: 1px solid var(--line); border-radius: 20px; background: var(--card);
+}
+#setLPPage thead tr,
+#setLPPage thead th {
+    background: var(--card); color: var(--ink-3);
+    font-size: .8rem; font-weight: 600; letter-spacing: 0;
+}
+#setLPPage thead th { padding-top: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+#setLPPage #tableBody { background: var(--card); color: var(--ink); }
+#setLPPage #tableBody > tr { border-color: var(--line); transition: background .15s; }
+#setLPPage #tableBody > tr:hover { background: var(--mint-2); }
+#setLPPage #tableBody td:first-child { color: var(--ink); font-weight: 500; }
+#setLPPage tfoot tr,
+#setLPPage tfoot td { background: var(--mint); color: var(--jade-dark); font-weight: 600; }
+#setLPPage tfoot td { padding-top: 14px; padding-bottom: 14px; font-size: 1rem; }
+#setLPPage tfoot td.text-slate-500 { color: var(--jade-dark); opacity: .6; }
+
+/* ปุ่มบันทึก */
+#setLPPage #saveBtn {
+    background: var(--jade); color: #fff; border-radius: 16px; box-shadow: none;
+    padding-top: 15px; padding-bottom: 15px; font-weight: 600; font-size: 1rem;
+    transition: background .2s, transform .12s;
+}
+#setLPPage #saveBtn:hover { background: var(--jade-dark); }
+#setLPPage #saveBtn:active { transform: scale(.985); }
+#setLPPage #saveBtn:disabled { background: #e3ebe7; color: #7e9188; cursor: not-allowed; }
+#setLPPage #statusText { color: var(--ink-3); }
+#setLPPage .border-t { border-color: var(--line); }
+#setLPPage .border-t span { color: var(--ink-2); font-weight: 500; }
+
+/* =================================================================
+   หน้า 2 : ลาพักร้อน
+   ================================================================= */
+#vacationPage {
+    --primary-color: var(--mint); --bg-color: var(--canvas); --card-bg: var(--card);
+    --text-color: var(--ink); --border-color: var(--line);
+    font-family: var(--font); color: var(--ink);
+}
+#vacationPage button,
+#vacationPage select,
+#vacationPage textarea,
+#vacationPage input { font-family: var(--font); }
+
+#vacationPage .container {
+    border: 1px solid var(--line); border-radius: 28px; box-shadow: var(--shadow-card); padding: 30px;
+}
+#vacationPage h2 {
+    text-align: left; color: var(--ink); font-size: 1.45rem; font-weight: 600; margin-bottom: 2px;
+}
+#vacationPage .subtitle { text-align: left; color: var(--ink-2); font-size: 1rem; margin-bottom: 22px; }
+
+#vacationPage .header-controls {
+    justify-content: flex-start; background: var(--canvas); border-radius: 18px; padding: 12px 16px; margin-bottom: 20px;
+}
+#vacationPage .header-controls label { color: var(--ink-2); font-weight: 500; }
+#vacationPage .header-controls select,
+#vacationPage .select-dropdown {
+    border: 1px solid var(--line); border-radius: 12px; background-color: var(--card);
+    color: var(--ink); font-weight: 500; transition: border-color .18s, box-shadow .18s;
+}
+#vacationPage .header-controls select { padding: 9px 16px; }
+#vacationPage .header-controls select:focus,
+#vacationPage .select-dropdown:focus { border-color: var(--jade); box-shadow: 0 0 0 4px var(--jade-ring); }
+
+/* ปฏิทิน */
+#vacationPage .calendar-container {
+    background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 20px 16px; margin-bottom: 26px;
+}
+#vacationPage .calendar-title { color: var(--ink); font-weight: 600; font-size: 1.05rem; margin-bottom: 12px; }
+#vacationPage .calendar-grid { gap: 4px; }
+#vacationPage .calendar-day-name { color: var(--ink-3); font-weight: 500; font-size: .8rem; }
+#vacationPage .calendar-day-name[style] { color: var(--coral) !important; }
+#vacationPage .calendar-day {
+    width: 36px; height: 36px; background: transparent; border: none; color: var(--ink-2); font-size: .92rem;
+}
+#vacationPage .calendar-day.empty { background: transparent; }
+#vacationPage .calendar-day.holiday {
+    background: var(--coral-bg); border: none; color: var(--coral); font-weight: 600;
+}
+#vacationPage .holiday-list-box {
+    background: var(--canvas); border: none; border-radius: 16px; padding: 12px 16px;
+}
+#vacationPage .holiday-list-title { color: var(--ink); font-weight: 600; }
+#vacationPage .holiday-item { color: var(--ink-2); }
+
+/* ตารางลาพักร้อน */
+#vacationPage table { border-radius: 0; overflow: visible; }
+#vacationPage th {
+    background: transparent; color: var(--ink-3); font-weight: 600; font-size: .85rem; text-align: left;
+    border-bottom: 1px solid var(--line); padding-bottom: 12px;
+}
+#vacationPage th:last-child { text-align: center; }
+#vacationPage th:first-child,
+#vacationPage th:last-child { border-radius: 0; }
+#vacationPage th br + span { color: var(--ink-3); }
+#vacationPage th, #vacationPage td { border-bottom-color: var(--line); }
+#vacationPage tbody tr:hover { background: var(--mint-2); }
+#vacationPage .name-cell strong { color: var(--ink); font-weight: 600; }
+
+#vacationPage .tag-x,
+#vacationPage .tag-v {
+    border: none; border-radius: 999px; padding: 3px 11px; font-weight: 500; font-size: .84rem;
+}
+#vacationPage .tag-x { background: var(--mint); color: #06684e; }
+#vacationPage .tag-v { background: var(--coral-bg); color: #b42328; }
+
+#vacationPage textarea.note-input {
+    background: var(--canvas); border: 1px solid transparent; border-radius: 12px; color: var(--ink);
+    transition: border-color .18s, box-shadow .18s, background .18s;
+}
+#vacationPage textarea.note-input::placeholder { color: #8da197; }
+#vacationPage textarea.note-input:focus {
+    background: var(--card); border-color: var(--jade); box-shadow: 0 0 0 4px var(--jade-ring);
+}
+
+#vacationPage .date-display { color: var(--ink-3); font-size: .82rem; font-weight: 400; }
+#vacationPage .info-link { color: var(--jade); font-weight: 500; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+#vacationPage .info-link:hover { color: var(--jade-dark); }
+
+#vacationPage .footer-org { color: var(--ink-3); font-size: .82rem; margin-top: 18px; }
+#vacationPage .btn-save {
+    background: var(--jade); border-radius: 14px; box-shadow: none; padding: 12px 30px;
+    font-weight: 600; font-size: 1rem;
+}
+#vacationPage .btn-save:hover { background: var(--jade-dark); }
+#vacationPage .btn-save:disabled { background: #e3ebe7; color: #7e9188; }
+
+/* ---------- Popup ---------- */
+#vacationPage .modal-overlay { background: rgba(15, 46, 36, .38); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+#vacationPage .modal-box,
+#vacationPage .dup-box,
+#vacationPage .hist-box {
+    border-radius: 26px; box-shadow: 0 28px 64px -24px rgba(15, 46, 36, .45);
+}
+#vacationPage .modal-box { padding: 30px 34px 26px; }
+#vacationPage .modal-icon { color: var(--jade); }
+#vacationPage .modal-message { color: var(--ink); font-weight: 600; }
+#vacationPage .modal-btn {
+    background: var(--jade); border-radius: 12px; box-shadow: none; padding: 10px 28px; font-weight: 600;
+}
+#vacationPage .modal-btn:hover { background: var(--jade-dark); }
+#vacationPage .btn-cancel { background: #eaf0ed; color: var(--ink-2); border-radius: 12px; padding: 10px 22px; font-weight: 500; }
+#vacationPage .btn-cancel:hover { background: #dfe8e3; }
+
+#vacationPage .dup-title.warn  { color: var(--amber); }
+#vacationPage .dup-title.block { color: #b42328; }
+#vacationPage .dup-title.info  { color: var(--ink); }
+#vacationPage .dup-day { background: var(--canvas); border: none; border-radius: 16px; color: var(--ink); }
+#vacationPage .dup-day.is-block { background: #fdf0f0; }
+#vacationPage .dup-day-head { color: var(--ink); }
+#vacationPage .dup-day.is-block .dup-day-head,
+#vacationPage .dup-block-msg,
+#vacationPage .dup-block-sub { color: #b42328; }
+#vacationPage .dup-person .t-off { color: #06684e; }
+#vacationPage .dup-person .t-vac { color: #b42328; }
+
+#vacationPage .hist-sub { color: var(--ink-3); }
+#vacationPage .hist-entry { border-bottom: 1px solid var(--line); color: var(--ink); }
+#vacationPage .hist-date { color: var(--ink); }
+#vacationPage .hist-off { color: #06684e; }
+#vacationPage .hist-vac { color: #b42328; }
+#vacationPage .hist-conf { color: var(--amber); }
+#vacationPage .hist-empty { color: var(--ink-3); }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px) scale(.98); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* ---------- มือถือ ---------- */
+@media (max-width: 600px) {
+    #setLPPage .bg-slate-50 { padding: 10px 8px; }
+    #setLPPage #thaiDateText { font-size: .92rem; }
+    #setLPPage #prevDayBtn, #setLPPage #nextDayBtn { width: 34px; height: 34px; }
+    #setLPPage #todayBtn { height: 34px; padding: 0 12px; }
+    #vacationPage .container { padding: 20px 14px; border-radius: 24px; }
+    #vacationPage h2 { font-size: 1.3rem; }
+    #vacationPage .header-controls { flex-wrap: wrap; }
+    #vacationPage .calendar-day { width: 34px; height: 34px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html body .tab-bar::before { transition: none; }
+    #vacationPage .modal-box, #vacationPage .dup-box, #vacationPage .hist-box { animation: none; }
+}
