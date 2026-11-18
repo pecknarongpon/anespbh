@@ -868,7 +868,17 @@ html body .tab-bar .tab-btn.active-tab2 {
 
         // ============================================================
         // Data Store
+        //
+        // หลักการบันทึกพร้อมกัน:
+        //  - ตอนกดบันทึก จะอ่านข้อมูลล่าสุดจากฐานข้อมูลก่อน (ใน transaction)
+        //  - เขียนทับเฉพาะ "ช่องที่ผู้ใช้แก้ไขเครื่องนี้" ช่องอื่นใช้ค่าล่าสุดของคนอื่น
+        //  - ถ้าแก้ช่องเดียวกัน ตัวที่กดบันทึกทีหลังเป็นตัวชนะ
+        //  - มี listener เรียลไทม์ คอยดึงข้อมูลที่คนอื่นบันทึกมาแสดงทันที
         // ============================================================
+
+        function cloneData(obj) {
+            return obj ? JSON.parse(JSON.stringify(obj)) : null;
+        }
 
         const dataStore = {
 
@@ -881,12 +891,29 @@ html body .tab-bar .tab-btn.active-tab2 {
                 return saved ? JSON.parse(saved) : null;
             },
 
-            async setSetLPDay(dateStr, data) {
+            // อ่านค่าล่าสุด -> ให้ mutator แก้เฉพาะช่องของเรา -> เขียนกลับ (ทำในครั้งเดียว)
+            async updateSetLPDay(dateStr, mutator) {
                 if (db) {
-                    await db.collection('setLP_daily').doc(dateStr).set(data);
-                    return;
+                    const ref = db.collection('setLP_daily').doc(dateStr);
+                    return await db.runTransaction(async (tx) => {
+                        const snap = await tx.get(ref);
+                        const next = mutator(snap.exists ? snap.data() : null);
+                        tx.set(ref, next);
+                        return next;
+                    });
                 }
-                localStorage.setItem(`report_${dateStr}`, JSON.stringify(data));
+                const saved = localStorage.getItem(`report_${dateStr}`);
+                const next = mutator(saved ? JSON.parse(saved) : null);
+                localStorage.setItem(`report_${dateStr}`, JSON.stringify(next));
+                return next;
+            },
+
+            subscribeSetLPDay(dateStr, callback) {
+                if (!db) return null;
+                return db.collection('setLP_daily').doc(dateStr).onSnapshot(
+                    snap => callback(snap),
+                    () => {}
+                );
             },
 
             async getLatestStockMeta(currentDateStr) {
@@ -917,12 +944,28 @@ html body .tab-bar .tab-btn.active-tab2 {
                 return saved ? JSON.parse(saved) : null;
             },
 
-            async setVacationMonth(monthKey, data) {
+            async updateVacationMonth(monthKey, mutator) {
                 if (db) {
-                    await db.collection('vacation_leaves').doc(monthKey).set(data);
-                    return;
+                    const ref = db.collection('vacation_leaves').doc(monthKey);
+                    return await db.runTransaction(async (tx) => {
+                        const snap = await tx.get(ref);
+                        const next = mutator(snap.exists ? snap.data() : null);
+                        tx.set(ref, next);
+                        return next;
+                    });
                 }
-                localStorage.setItem(`leave_data_${monthKey}`, JSON.stringify(data));
+                const saved = localStorage.getItem(`leave_data_${monthKey}`);
+                const next = mutator(saved ? JSON.parse(saved) : null);
+                localStorage.setItem(`leave_data_${monthKey}`, JSON.stringify(next));
+                return next;
+            },
+
+            subscribeVacationMonth(monthKey, callback) {
+                if (!db) return null;
+                return db.collection('vacation_leaves').doc(monthKey).onSnapshot(
+                    snap => callback(snap),
+                    () => {}
+                );
             }
 
         };
@@ -1017,6 +1060,13 @@ html body .tab-bar .tab-btn.active-tab2 {
         const todayStockInput = document.getElementById('todayStockInput');
         const setLPResultBadge = document.getElementById('setLPResultBadge');
         const stockWarningContainer = document.getElementById('stockWarningContainer');
+
+        // ช่องที่เครื่องนี้แก้ไขแล้วแต่ยังไม่ได้บันทึก เช่น "0.setLP", "2.recorder", "total", "today"
+        const dirtyLP = new Set();
+        // ยอด Stock ทั้งหมดที่ดึงมาเติมให้อัตโนมัติ (ยังไม่ใช่ค่าที่ผู้ใช้พิมพ์เอง)
+        let totalPrefilled = false;
+        let unsubSetLP = null;
+        let loadToken = 0;
 
         function formatThaiDate(dateObj) {
 
@@ -1122,8 +1172,15 @@ html body .tab-bar .tab-btn.active-tab2 {
 
             document.querySelectorAll('.data-input').forEach(input => {
                 input.addEventListener('input', () => {
+                    dirtyLP.add(`${input.dataset.row}.${input.dataset.type}`);
                     calculateTotals();
                     calculateSetLPResult();
+                });
+            });
+
+            document.querySelectorAll('.recorder-select').forEach(sel => {
+                sel.addEventListener('change', () => {
+                    dirtyLP.add(`${sel.dataset.row}.recorder`);
                 });
             });
         }
@@ -1173,10 +1230,71 @@ html body .tab-bar .tab-btn.active-tab2 {
             }
         }
 
-        totalStockInput.addEventListener('input', calculateSetLPResult);
-        todayStockInput.addEventListener('input', calculateSetLPResult);
+        totalStockInput.addEventListener('input', () => {
+            dirtyLP.add('total');
+            calculateSetLPResult();
+        });
+
+        todayStockInput.addEventListener('input', () => {
+            dirtyLP.add('today');
+            calculateSetLPResult();
+        });
+
+        // เอาข้อมูลจากฐานข้อมูลมาแสดง โดยไม่แตะช่องที่เครื่องนี้กำลังแก้ไขค้างอยู่
+        function applyRemoteSetLP(data) {
+
+            const roomList = Array.isArray(data) ? data : (data.rooms || []);
+
+            rooms.forEach((_, index) => {
+
+                const item = roomList[index];
+
+                if (!item) return;
+
+                const setLPInput = document.querySelector(`input[data-row="${index}"][data-type="setLP"]`);
+                const clothInput = document.querySelector(`input[data-row="${index}"][data-type="cloth"]`);
+                const recorderSelect = document.querySelector(`select[data-row="${index}"][data-type="recorder"]`);
+
+                if (!dirtyLP.has(`${index}.setLP`)) {
+                    const v = (item.setLP === undefined || item.setLP === null) ? '' : item.setLP;
+                    if (setLPInput.value !== String(v)) setLPInput.value = v;
+                }
+
+                if (!dirtyLP.has(`${index}.cloth`)) {
+                    const v = (item.cloth === undefined || item.cloth === null) ? '' : item.cloth;
+                    if (clothInput.value !== String(v)) clothInput.value = v;
+                }
+
+                if (!dirtyLP.has(`${index}.recorder`)) {
+                    recorderSelect.value = item.recorder || '';
+                }
+            });
+
+            if (data.totalStock !== undefined && !dirtyLP.has('total')) {
+                totalStockInput.value = data.totalStock;
+                totalPrefilled = false;
+            }
+
+            if (data.todayStock !== undefined && !dirtyLP.has('today')) {
+                todayStockInput.value = data.todayStock;
+            }
+
+            calculateTotals();
+            calculateSetLPResult();
+        }
 
         async function loadDataForDate(dateStr) {
+
+            const token = ++loadToken;
+
+            // เลิกฟังวันเดิม
+            if (unsubSetLP) {
+                unsubSetLP();
+                unsubSetLP = null;
+            }
+
+            dirtyLP.clear();
+            totalPrefilled = false;
 
             rooms.forEach((_, index) => {
 
@@ -1197,51 +1315,35 @@ html body .tab-bar .tab-btn.active-tab2 {
 
             } catch (e) {
 
+                if (token !== loadToken) return;
+
                 statusText.textContent = "⚠️ โหลดข้อมูลไม่สำเร็จ ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต";
                 calculateTotals();
                 calculateSetLPResult();
                 return;
             }
 
+            if (token !== loadToken) return;
+
             if (data) {
 
-                const roomList = data.rooms || data;
-
-                roomList.forEach((item, index) => {
-
-                    const setLPInput = document.querySelector(`input[data-row="${index}"][data-type="setLP"]`);
-                    const clothInput = document.querySelector(`input[data-row="${index}"][data-type="cloth"]`);
-                    const recorderSelect = document.querySelector(`select[data-row="${index}"][data-type="recorder"]`);
-
-                    if (setLPInput && item.setLP !== '') {
-                        setLPInput.value = item.setLP;
-                    }
-
-                    if (clothInput && item.cloth !== '') {
-                        clothInput.value = item.cloth;
-                    }
-
-                    if (recorderSelect && item.recorder) {
-                        recorderSelect.value = item.recorder;
-                    }
-                });
-
-                if (data.totalStock !== undefined) {
-                    totalStockInput.value = data.totalStock;
-                }
-
-                if (data.todayStock !== undefined) {
-                    todayStockInput.value = data.todayStock;
-                }
+                applyRemoteSetLP(data);
 
                 statusText.textContent = "มีข้อมูลของวันนี้แล้ว · สามารถแก้ไขและกดบันทึกทับได้";
 
             } else {
 
-                const latestTotal = await dataStore.getLatestStockMeta(dateStr);
+                let latestTotal = '';
 
-                if (latestTotal !== '' && latestTotal !== undefined) {
+                try {
+                    latestTotal = await dataStore.getLatestStockMeta(dateStr);
+                } catch (e) {}
+
+                if (token !== loadToken) return;
+
+                if (latestTotal !== '' && latestTotal !== undefined && !dirtyLP.has('total')) {
                     totalStockInput.value = latestTotal;
+                    totalPrefilled = true;
                 }
 
                 statusText.textContent = "ยังไม่มีข้อมูลของวันนี้ · กรอกแล้วกดบันทึกได้เลย";
@@ -1250,6 +1352,25 @@ html body .tab-bar .tab-btn.active-tab2 {
 
             calculateTotals();
             calculateSetLPResult();
+
+            // ฟังการเปลี่ยนแปลงจากเครื่องอื่นแบบเรียลไทม์
+            let firstSnapshot = true;
+
+            unsubSetLP = dataStore.subscribeSetLPDay(dateStr, (snap) => {
+
+                if (token !== loadToken) return;
+
+                if (firstSnapshot) {
+                    firstSnapshot = false;
+                    if (snap.exists) applyRemoteSetLP(snap.data());
+                    return;
+                }
+
+                if (snap.exists && !snap.metadata.hasPendingWrites) {
+                    applyRemoteSetLP(snap.data());
+                    statusText.textContent = "🔄 อัปเดตข้อมูลล่าสุดจากเครื่องอื่นแล้ว";
+                }
+            });
         }
 
         async function saveData_setLP() {
@@ -1258,32 +1379,18 @@ html body .tab-bar .tab-btn.active-tab2 {
 
             if (!dateStr) return;
 
-            const roomsData = [];
+            // ภาพถ่ายค่าในเครื่องนี้ ณ ตอนกดบันทึก
+            const savedKeys = new Set(dirtyLP);
+            const prefillPending = totalPrefilled;
 
-            rooms.forEach((room, index) => {
-
-                const setLPVal = document.querySelector(`input[data-row="${index}"][data-type="setLP"]`).value;
-                const clothVal = document.querySelector(`input[data-row="${index}"][data-type="cloth"]`).value;
-                const recorderVal = document.querySelector(`select[data-row="${index}"][data-type="recorder"]`).value;
-
-                roomsData.push({
-                    room: room.name,
-                    setLP: setLPVal,
-                    cloth: clothVal,
-                    recorder: recorderVal
-                });
-            });
-
-            const currentCheckResult =
-                (parseInt(todayStockInput.value) || 0) -
-                (parseInt(totalStockInput.value) || 0);
-
-            const fullDataToSave = {
+            const local = {
                 totalStock: totalStockInput.value,
                 todayStock: todayStockInput.value,
-                checkResult: currentCheckResult,
-                rooms: roomsData,
-                savedAt: new Date().toISOString()
+                rooms: rooms.map((room, index) => ({
+                    setLP: document.querySelector(`input[data-row="${index}"][data-type="setLP"]`).value,
+                    cloth: document.querySelector(`input[data-row="${index}"][data-type="cloth"]`).value,
+                    recorder: document.querySelector(`select[data-row="${index}"][data-type="recorder"]`).value
+                }))
             };
 
             saveBtn.disabled = true;
@@ -1291,10 +1398,64 @@ html body .tab-bar .tab-btn.active-tab2 {
 
             try {
 
-                await dataStore.setSetLPDay(dateStr, fullDataToSave);
+                const merged = await dataStore.updateSetLPDay(dateStr, (cur) => {
 
-                if (totalStockInput.value !== '') {
-                    await dataStore.setLatestStockMeta(totalStockInput.value);
+                    const base = cloneData(cur) || {};
+                    const curRooms = Array.isArray(base) ? base : (base.rooms || []);
+
+                    // แต่ละช่อง: ถ้าเราแก้ -> ใช้ค่าเรา / ถ้าไม่ได้แก้ -> คงค่าล่าสุดในฐานข้อมูล
+                    const outRooms = rooms.map((room, index) => {
+
+                        const c = curRooms[index] || {};
+                        const pick = (type) =>
+                            savedKeys.has(`${index}.${type}`)
+                                ? local.rooms[index][type]
+                                : (c[type] === undefined || c[type] === null ? '' : c[type]);
+
+                        return {
+                            room: room.name,
+                            setLP: pick('setLP'),
+                            cloth: pick('cloth'),
+                            recorder: pick('recorder')
+                        };
+                    });
+
+                    const curTotal = Array.isArray(base) ? undefined : base.totalStock;
+                    const curToday = Array.isArray(base) ? undefined : base.todayStock;
+
+                    let totalStock;
+                    if (savedKeys.has('total')) {
+                        totalStock = local.totalStock;
+                    } else if (prefillPending && (curTotal === undefined || curTotal === '')) {
+                        totalStock = local.totalStock;   // ค่าที่เติมให้อัตโนมัติ ใช้เมื่อยังไม่มีใครบันทึกไว้
+                    } else {
+                        totalStock = curTotal === undefined ? '' : curTotal;
+                    }
+
+                    const todayStock = savedKeys.has('today')
+                        ? local.todayStock
+                        : (curToday === undefined ? '' : curToday);
+
+                    return {
+                        totalStock: totalStock,
+                        todayStock: todayStock,
+                        checkResult: (parseInt(todayStock) || 0) - (parseInt(totalStock) || 0),
+                        rooms: outRooms,
+                        savedAt: new Date().toISOString()
+                    };
+                });
+
+                // ช่องที่เพิ่งบันทึกไป ถือว่าไม่ค้างแก้ไขอีก
+                savedKeys.forEach(k => dirtyLP.delete(k));
+                totalPrefilled = false;
+
+                // แสดงผลรวมล่าสุด (รวมของคนอื่นที่เซฟไว้ก่อนหน้า)
+                applyRemoteSetLP(merged);
+
+                if ((savedKeys.has('total') || prefillPending) && merged.totalStock !== '' && merged.totalStock !== undefined) {
+                    try {
+                        await dataStore.setLatestStockMeta(merged.totalStock);
+                    } catch (e) {}
                 }
 
                 statusText.textContent = "บันทึกข้อมูลเรียบร้อยแล้ว!";
@@ -1390,7 +1551,12 @@ html body .tab-bar .tab-btn.active-tab2 {
         let rowHistory = {};        // ประวัติการบันทึกของแต่ละคน (เฉพาะเดือนที่เปิดอยู่)
         let rowLastUpdated = {};    // วันที่แก้ไขข้อมูลล่าสุด (ISO)
         let rowLegacyDate = {};     // วันที่จากข้อมูลเก่า (ก่อนมีประวัติ)
-        let dirtyRows = new Set();
+
+        // แถวที่เครื่องนี้แก้ไขแล้วแต่ยังไม่ได้บันทึก (แยก "วัน" กับ "Note")
+        const dirtySel = new Set();
+        const dirtyNote = new Set();
+
+        let unsubVac = null;
 
         const leaveTableBody = document.getElementById('leaveTableBody');
 
@@ -1457,7 +1623,7 @@ html body .tab-bar .tab-btn.active-tab2 {
             });
 
             document.getElementById(`note-${index}`).addEventListener('input', () => {
-                dirtyRows.add(index);
+                dirtyNote.add(index);
             });
         });
 
@@ -1502,7 +1668,7 @@ html body .tab-bar .tab-btn.active-tab2 {
                 }
 
                 renderTags(index);
-                dirtyRows.add(index);
+                dirtySel.add(index);
 
                 // เลือกวันที่ทำให้เกินกำหนด -> เด้งแจ้งทันที และล็อกปุ่มบันทึก
                 const day = parseInt(val.split(' ')[1]);
@@ -1533,7 +1699,7 @@ html body .tab-bar .tab-btn.active-tab2 {
             delete rowDayTimes[index][val];
 
             renderTags(index);
-            dirtyRows.add(index);
+            dirtySel.add(index);
             refreshSaveState();
         }
 
@@ -1662,7 +1828,12 @@ html body .tab-bar .tab-btn.active-tab2 {
             return fullName.replace(/^คุณ/, '');
         }
 
-        function analyzeConflicts() {
+        // view = มุมมองข้อมูลที่ใช้ตรวจ (ค่าเริ่มต้น = ข้อมูลในเครื่องนี้)
+        // touched = แถวที่เพิ่งแก้ไข (ตรวจเฉพาะวันที่แถวเหล่านี้เกี่ยวข้อง)
+        function analyzeConflicts(view, touched) {
+
+            view = view || { sel: rowSelections, times: rowDayTimes };
+            touched = touched || dirtySel;
 
             const monthKey = document.getElementById('monthYearSelect').value;
             const [yearStr, monthStr] = monthKey.split('-');
@@ -1676,7 +1847,7 @@ html body .tab-bar .tab-btn.active-tab2 {
 
                 const seen = new Set();
 
-                (rowSelections[index] || []).forEach(sel => {
+                (view.sel[index] || []).forEach(sel => {
 
                     const parts = sel.split(' ');
                     const type = parts[0];
@@ -1707,12 +1878,12 @@ html body .tab-bar .tab-btn.active-tab2 {
                     const total = list.length;
 
                     // ตรวจเฉพาะวันที่แถวที่เพิ่งแก้ไขเกี่ยวข้อง
-                    const touched = list.some(p => dirtyRows.has(p.index));
+                    const touchedDay = list.some(p => touched.has(p.index));
 
-                    if (!touched || total < 2) return;
+                    if (!touchedDay || total < 2) return;
 
                     // แสดงรายชื่อ "คนที่ขอไว้ก่อนแล้ว" (ไม่รวมแถวที่เพิ่งแก้ไข)
-                    let shown = list.filter(p => !dirtyRows.has(p.index));
+                    let shown = list.filter(p => !touched.has(p.index));
                     if (shown.length === 0) shown = list;
 
                     const entry = {
@@ -1808,10 +1979,14 @@ html body .tab-bar .tab-btn.active-tab2 {
         }
 
         // สร้างบันทึกประวัติ 1 รายการ ณ ตอนกดบันทึก
-        function buildHistoryEntry(index, now) {
+        // view = มุมมองข้อมูลล่าสุด (แถวของเราใช้ค่าในเครื่อง แถวอื่นใช้ค่าจากฐานข้อมูล)
+        function buildHistoryEntry(index, now, view) {
 
-            const offs = daysOf(rowSelections[index], 'x');
-            const vacs = daysOf(rowSelections[index], 'v');
+            view = view || { sel: rowSelections, times: rowDayTimes };
+
+            const mySel = view.sel[index] || [];
+            const offs = daysOf(mySel, 'x');
+            const vacs = daysOf(mySel, 'v');
 
             const conflicts = [];
 
@@ -1826,7 +2001,7 @@ html body .tab-bar .tab-btn.active-tab2 {
 
                     if (j === index) return;
 
-                    (rowSelections[j] || []).forEach(sel => {
+                    (view.sel[j] || []).forEach(sel => {
 
                         const parts = sel.split(' ');
 
@@ -1835,7 +2010,7 @@ html body .tab-bar .tab-btn.active-tab2 {
                                 idx: j,
                                 name: shortName(name),
                                 type: parts[0],
-                                time: (rowDayTimes[j] && rowDayTimes[j][sel]) || ''
+                                time: (view.times[j] && view.times[j][sel]) || ''
                             });
                         }
                     });
@@ -1989,65 +2164,128 @@ html body .tab-bar .tab-btn.active-tab2 {
 
             const now = new Date();
 
-            let monthData = {};
+            // แถวที่เครื่องนี้แก้ไข ณ ตอนกดบันทึก
+            const selRows = new Set(dirtySel);
+            const noteRows = new Set(dirtyNote);
+            const rowsToWrite = new Set([...selRows, ...noteRows]);
 
-            // เก็บค่าใหม่ไว้ก่อน ถ้าบันทึกไม่สำเร็จจะได้ไม่ต้องย้อนค่า
-            const newHistory = {};
-            const newLastUpdated = {};
+            if (rowsToWrite.size === 0) {
+                document.getElementById('customModal').style.display = 'flex';
+                return;
+            }
+
+            // ภาพถ่ายค่าในเครื่องนี้
+            const localSnap = {};
 
             names.forEach((_, index) => {
-
-                let history = (rowHistory[index] || []).slice();
-                let lastUpdated = rowLastUpdated[index] || '';
-
-                if (dirtyRows.has(index)) {
-
-                    const entry = buildHistoryEntry(index, now);
-
-                    const last = history.length > 0 ? history[history.length - 1] : null;
-
-                    const changed = last
-                        ? sigOf(entry.offs, entry.vacs) !== sigOf(last.offs || [], last.vacs || [])
-                        : (entry.offs.length > 0 || entry.vacs.length > 0);
-
-                    // เพิ่มประวัติเมื่อรายการวันเปลี่ยนจริง ๆ (แก้ Note อย่างเดียวไม่เพิ่มรายการ)
-                    if (changed) {
-                        history.push(entry);
-                    }
-
-                    lastUpdated = now.toISOString();
-                }
-
-                newHistory[index] = history;
-                newLastUpdated[index] = lastUpdated;
-
-                monthData[index] = {
+                localSnap[index] = {
                     selections: sortSelections(rowSelections[index].slice()),
-                    dayTimes: rowDayTimes[index] || {},
-                    note: document.getElementById(`note-${index}`).value,
-                    history: history,
-                    lastUpdated: lastUpdated,
-                    legacyDate: rowLegacyDate[index] || ''
+                    dayTimes: JSON.parse(JSON.stringify(rowDayTimes[index] || {})),
+                    note: document.getElementById(`note-${index}`).value
                 };
             });
 
+            const saveBtnEl = document.getElementById('vacSaveBtn');
+            saveBtnEl.disabled = true;
+
             try {
 
-                await dataStore.setVacationMonth(currentMonthKey, monthData);
+                const merged = await dataStore.updateVacationMonth(currentMonthKey, (cur) => {
 
-                names.forEach((_, index) => {
-                    rowHistory[index] = newHistory[index];
-                    rowLastUpdated[index] = newLastUpdated[index];
-                    updateInfoCell(index);
+                    // ข้อมูลล่าสุดในฐานข้อมูล (รวมที่คนอื่นเพิ่งบันทึก)
+                    const next = cloneData(cur) || {};
+
+                    // มุมมองล่าสุด: แถวที่เราแก้ใช้ค่าเรา แถวอื่นใช้ค่าจากฐานข้อมูล
+                    const view = { sel: {}, times: {} };
+
+                    names.forEach((_, i) => {
+
+                        if (selRows.has(i)) {
+                            view.sel[i] = localSnap[i].selections;
+                            view.times[i] = localSnap[i].dayTimes;
+                        } else {
+                            const d = next[i];
+                            view.sel[i] = (d && d.selections) || [];
+                            view.times[i] = (d && d.dayTimes) || {};
+                        }
+                    });
+
+                    // เช็คเกินกำหนดอีกรอบกับข้อมูลล่าสุดจริง (กรณีมีคนเซฟวันเดียวกันพร้อมกัน)
+                    const { blocked } = analyzeConflicts(view, selRows);
+
+                    if (blocked.length > 0) {
+                        const err = new Error('BLOCKED');
+                        err.blocked = blocked;
+                        throw err;
+                    }
+
+                    rowsToWrite.forEach(i => {
+
+                        const d = next[i] = next[i] || {};
+
+                        if (selRows.has(i)) {
+
+                            const history = (d.history || []).slice();
+
+                            const entry = buildHistoryEntry(i, now, view);
+
+                            const last = history.length > 0 ? history[history.length - 1] : null;
+
+                            const changed = last
+                                ? sigOf(entry.offs, entry.vacs) !== sigOf(last.offs || [], last.vacs || [])
+                                : (entry.offs.length > 0 || entry.vacs.length > 0);
+
+                            // เพิ่มประวัติเมื่อรายการวันเปลี่ยนจริง ๆ (แก้ Note อย่างเดียวไม่เพิ่มรายการ)
+                            if (changed) {
+                                history.push(entry);
+                            }
+
+                            d.selections = localSnap[i].selections;
+                            d.dayTimes = localSnap[i].dayTimes;
+                            d.history = history;
+                        }
+
+                        if (noteRows.has(i)) {
+                            d.note = localSnap[i].note;
+                        }
+
+                        d.lastUpdated = now.toISOString();
+
+                        if (d.selections === undefined) d.selections = [];
+                        if (d.dayTimes === undefined) d.dayTimes = {};
+                        if (d.history === undefined) d.history = [];
+                        if (d.note === undefined) d.note = '';
+                        if (d.legacyDate === undefined) d.legacyDate = rowLegacyDate[i] || '';
+                    });
+
+                    return next;
                 });
 
-                dirtyRows.clear();
+                // ช่องที่เพิ่งบันทึกไป ถือว่าไม่ค้างแก้ไขอีก
+                selRows.forEach(i => dirtySel.delete(i));
+                noteRows.forEach(i => dirtyNote.delete(i));
+
+                // แสดงข้อมูลล่าสุดหลังรวมกับของคนอื่นแล้ว
+                applyVacationData(merged);
 
                 document.getElementById('customModal').style.display = 'flex';
 
             } catch (e) {
 
-                alert('บันทึกไม่สำเร็จ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต แล้วลองใหม่อีกครั้ง');
+                if (e && e.message === 'BLOCKED' && e.blocked) {
+
+                    // มีคนอื่นเพิ่งบันทึกวันเดียวกันจนเต็มโควต้า
+                    showDupModal('block', e.blocked, null);
+
+                } else {
+
+                    alert('บันทึกไม่สำเร็จ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต แล้วลองใหม่อีกครั้ง');
+
+                }
+
+            } finally {
+
+                refreshSaveState();
 
             }
         }
@@ -2056,11 +2294,72 @@ html body .tab-bar .tab-btn.active-tab2 {
             document.getElementById('customModal').style.display = 'none';
         }
 
+        // เอาข้อมูลจากฐานข้อมูลมาแสดง โดยไม่แตะส่วนที่เครื่องนี้แก้ไขค้างอยู่
+        function applyVacationData(monthData) {
+
+            names.forEach((_, index) => {
+
+                const noteField = document.getElementById(`note-${index}`);
+
+                const d = monthData && monthData[index];
+
+                if (d) {
+
+                    if (!dirtySel.has(index)) {
+                        // เรียงเลขวันจากน้อยไปมาก ไม่ว่าจะบันทึกไว้ลำดับไหนก็ตาม
+                        rowSelections[index] = sortSelections((d.selections || []).slice());
+                        rowDayTimes[index] = d.dayTimes || {};
+                        renderTags(index);
+                    }
+
+                    rowHistory[index] = d.history || [];
+                    rowLastUpdated[index] = d.lastUpdated || '';
+
+                    // ข้อมูลเก่า (ก่อนมีประวัติ) : ใช้วันแก้ไขล่าสุด หรือวันลงข้อมูลเดิม
+                    const legacy = (d.updated && d.updated !== '-') ? d.updated : (d.created || '');
+                    rowLegacyDate[index] = d.legacyDate || (legacy !== '-' ? legacy : '');
+
+                    if (!dirtyNote.has(index)) {
+                        const newNote = d.note || "";
+                        if (noteField.value !== newNote) noteField.value = newNote;
+                    }
+
+                } else {
+
+                    if (!dirtySel.has(index)) {
+                        rowSelections[index] = [];
+                        rowDayTimes[index] = {};
+                        renderTags(index);
+                    }
+
+                    rowHistory[index] = [];
+                    rowLastUpdated[index] = '';
+                    rowLegacyDate[index] = '';
+
+                    if (!dirtyNote.has(index) && noteField.value !== '') {
+                        noteField.value = "";
+                    }
+
+                }
+
+                updateInfoCell(index);
+            });
+
+            refreshSaveState();
+        }
+
         async function loadMonthData() {
 
             const currentMonthKey = document.getElementById('monthYearSelect').value;
 
-            dirtyRows.clear();
+            // เลิกฟังเดือนเดิม
+            if (unsubVac) {
+                unsubVac();
+                unsubVac = null;
+            }
+
+            dirtySel.clear();
+            dirtyNote.clear();
 
             let monthData = null;
 
@@ -2074,46 +2373,18 @@ html body .tab-bar .tab-btn.active-tab2 {
 
             }
 
-            names.forEach((_, index) => {
+            // ผู้ใช้เปลี่ยนเดือนระหว่างโหลด
+            if (currentMonthKey !== document.getElementById('monthYearSelect').value) return;
 
-                const noteField = document.getElementById(`note-${index}`);
+            applyVacationData(monthData);
 
-                if (monthData && monthData[index]) {
+            // ฟังการเปลี่ยนแปลงจากเครื่องอื่นแบบเรียลไทม์
+            unsubVac = dataStore.subscribeVacationMonth(currentMonthKey, (snap) => {
 
-                    const d = monthData[index];
+                if (currentMonthKey !== document.getElementById('monthYearSelect').value) return;
 
-                    // เรียงเลขวันจากน้อยไปมาก ไม่ว่าจะบันทึกไว้ลำดับไหนก็ตาม
-                    rowSelections[index] = sortSelections((d.selections || []).slice());
-                    rowDayTimes[index] = d.dayTimes || {};
-                    rowHistory[index] = d.history || [];
-                    rowLastUpdated[index] = d.lastUpdated || '';
-
-                    // ข้อมูลเก่า (ก่อนมีประวัติ) : ใช้วันแก้ไขล่าสุด หรือวันลงข้อมูลเดิม
-                    const legacy = (d.updated && d.updated !== '-') ? d.updated : (d.created || '');
-                    rowLegacyDate[index] = d.legacyDate || (legacy !== '-' ? legacy : '');
-
-                    renderTags(index);
-
-                    noteField.value = d.note || "";
-
-                } else {
-
-                    rowSelections[index] = [];
-                    rowDayTimes[index] = {};
-                    rowHistory[index] = [];
-                    rowLastUpdated[index] = '';
-                    rowLegacyDate[index] = '';
-
-                    renderTags(index);
-
-                    noteField.value = "";
-
-                }
-
-                updateInfoCell(index);
+                applyVacationData(snap.exists ? snap.data() : null);
             });
-
-            refreshSaveState();
         }
 
         // เริ่มต้นหน้า Vacation
